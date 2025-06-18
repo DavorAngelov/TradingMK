@@ -1,0 +1,64 @@
+import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
+import profilePic from '../../assets/images/342194737_196248126526678_818295510495484205_n.jpg';
+import { ChevronDown ,LogOut, Settings,ChartCandlestick,BriefcaseBusiness} from 'lucide-react';
+
+const Menu = () => {
+    const [open, setOpen] = useState(false);
+
+    const toggleDropdown = () => setOpen(!open);
+
+    return (
+       <nav className="w-full fixed top-0 left-0 bg-white/20 text-black backdrop-blur-lg shadow-lg rounded-xl mt-2">
+            <div className="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
+                {/* Left side: Logo + navigation */}
+                <div className="flex items-center space-x-6">
+                    <div className="text-xl font-bold">Trading<span className="text-blue-400">MK</span></div>
+                    <Link to="/" className="hover:text-gray-600">Dashboard</Link>
+                    <Link to="/" className="hover:text-gray-600">My Portfolio</Link>
+                </div>
+
+                {/* Right side: User info */}
+                <div className="relative flex items-center gap-2">
+                    <Link to="/" className="mr-20 hover:text-gray-600">Analysis</Link>
+                    <img
+                        src={profilePic}
+                        alt="Profile"
+                        className="w-10 h-10 rounded-full object-cover"
+                    />
+                    <span className="font-medium">Davor Angelov</span>
+                    <button
+                        className="flex items-center space-x-2 hover:text-gray-600 focus:outline-none"
+                        onClick={toggleDropdown}
+                    >
+                        <ChevronDown
+                            className={`w-4 h-4 transform transition-transform duration-300 ${
+                                open ? 'rotate-180' : 'rotate-0'
+                            }`}
+                        />
+                    </button>
+
+                    {open && (
+                        <div className="absolute right-0 left-36 mt-40 w-48 bg-white border-blue-50 rounded-xl shadow-md z-50 ">
+                            <Link
+                                to="/settings"
+                                className="block px-4 py-2 hover:bg-gray-100 text-sm rounded-xl flex gap-2"
+                            >
+                                <Settings></Settings>
+                                Settings
+                            </Link>
+                            <button
+                                className="w-full cursor-pointer text-left px-4 py-2 hover:bg-gray-100 text-sm rounded-xl text-red-500 flex gap-2"
+                            >
+                                <LogOut></LogOut>
+                                Logout
+                            </button>
+                        </div>
+                    )}
+                </div>
+            </div>
+        </nav>
+    );
+};
+
+export default Menu;
