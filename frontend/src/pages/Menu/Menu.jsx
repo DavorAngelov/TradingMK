@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import profilePic from '../../assets/images/342194737_196248126526678_818295510495484205_n.jpg';
+import profilePic from '../../assets/images/davor-picture.jpg';
 import { ChevronDown ,LogOut, Settings,ChartCandlestick,BriefcaseBusiness} from 'lucide-react';
 
 const Menu = () => {
@@ -9,7 +9,7 @@ const Menu = () => {
     const toggleDropdown = () => setOpen(!open);
 
     return (
-       <nav className="w-full fixed top-0 left-0 bg-white/20 text-black backdrop-blur-lg shadow-lg rounded-xl mt-2">
+       <nav className="w-full fixed top-0 left-0 bg-white/20 text-black backdrop-blur-md shadow-lg rounded-xl z-50 border border-blue-100">
             <div className="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
                 {/* Left side: Logo + navigation */}
                 <div className="flex items-center space-x-6">
