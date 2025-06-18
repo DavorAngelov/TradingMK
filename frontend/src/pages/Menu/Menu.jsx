@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 import profilePic from '../../assets/images/davor-picture.jpg';
-import { ChevronDown ,LogOut, Settings,ChartCandlestick,BriefcaseBusiness} from 'lucide-react';
+import { ChevronDown, LogOut, Settings } from 'lucide-react';
 
 const Menu = () => {
     const [open, setOpen] = useState(false);
@@ -9,18 +9,32 @@ const Menu = () => {
     const toggleDropdown = () => setOpen(!open);
 
     return (
-       <nav className="w-full fixed top-0 left-0 bg-white/20 text-black backdrop-blur-md shadow-lg rounded-xl z-50 border border-blue-100">
+        <nav className="w-full fixed top-0 left-0 bg-white/20 text-black backdrop-blur-md shadow-lg rounded-xl z-50 border border-blue-100">
             <div className="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
                 {/* Left side: Logo + navigation */}
                 <div className="flex items-center space-x-6">
                     <div className="text-xl font-bold">Trading<span className="text-blue-400">MK</span></div>
-                    <Link to="/" className="hover:text-gray-600">Dashboard</Link>
-                    <Link to="/" className="hover:text-gray-600">My Portfolio</Link>
+                    <NavLink
+                        to="/dashboard"
+                        className={({ isActive }) =>
+                            isActive ? 'border-b-2 border-blue-400 pb-1 hover:text-gray-600' : 'hover:text-gray-600'
+                        }
+                    >
+                        Dashboard
+                    </NavLink>
+                    <NavLink
+                        to="/portfolio"
+                        className={({ isActive }) =>
+                            isActive ? 'border-b-2 border-blue-400 pb-1 hover:text-gray-600' : 'hover:text-gray-600'
+                        }
+                    >
+                        My Portfolio
+                    </NavLink>
                 </div>
 
                 {/* Right side: User info */}
                 <div className="relative flex items-center gap-2">
-                    <Link to="/" className="mr-20 hover:text-gray-600">Analysis</Link>
+                    <NavLink to="/analysis" className="mr-20 hover:text-gray-600">Analysis</NavLink>
                     <img
                         src={profilePic}
                         alt="Profile"
@@ -40,17 +54,17 @@ const Menu = () => {
 
                     {open && (
                         <div className="absolute right-0 left-36 mt-40 w-48 bg-white border-blue-50 rounded-xl shadow-md z-50 ">
-                            <Link
+                            <NavLink
                                 to="/settings"
                                 className="block px-4 py-2 hover:bg-gray-100 text-sm rounded-xl flex gap-2"
                             >
-                                <Settings></Settings>
+                                <Settings />
                                 Settings
-                            </Link>
+                            </NavLink>
                             <button
                                 className="w-full cursor-pointer text-left px-4 py-2 hover:bg-gray-100 text-sm rounded-xl text-red-500 flex gap-2"
                             >
-                                <LogOut></LogOut>
+                                <LogOut />
                                 Logout
                             </button>
                         </div>
