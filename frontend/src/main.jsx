@@ -7,13 +7,15 @@ import {BrowserRouter, Route, Routes} from "react-router-dom";
 import Menu from "./pages/Menu/Menu.jsx";
 import AllocationSection from "./pages/Dashboard/AllocationSection/AllocationSection.jsx";
 import Dashboard from "./pages/Dashboard/Dashboard.jsx";
+import LandingPage from "./pages/LandingPage/LandingPage.jsx";
 
 createRoot(document.getElementById('root')).render(
-    <StrictMode>
+
         <BrowserRouter>
             <Routes>
                 <Route path="/dashboard" element={<Dashboard/>}></Route>
+                <Route path="/landing" element={<LandingPage/>}></Route>
             </Routes>
         </BrowserRouter>
-    </StrictMode>,
+
 )
