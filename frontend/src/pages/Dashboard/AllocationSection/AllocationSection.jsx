@@ -1,4 +1,5 @@
 import React from 'react';
+import {Link} from "react-router-dom";
 
 const AllocationSection = () => {
     const allocations = [
@@ -29,7 +30,7 @@ const AllocationSection = () => {
                     {/* Main allocation blocks */}
                     <div className="grid grid-cols-2 gap-2 ">
                         {allocations.map((token, index) => (
-                            <div
+                            <Link to="/detailed"
                                 key={token.symbol}
                                 className={`${token.color} p-4 rounded-lg text-gray-800 ${
                                     index < 2 ? 'col-span-1' : 'col-span-1'
@@ -50,7 +51,7 @@ const AllocationSection = () => {
                                     <span className="font-bold text-lg">{token.amount}</span>
                                     <span className="text-sm">{token.percentage}%</span>
                                 </div>
-                            </div>
+                            </Link>
                         ))}
                     </div>
 
