@@ -19,6 +19,27 @@ public class Stock {
     private Double currentPrice;
     private LocalDateTime lastUpdated;
 
+    @Column(nullable = false)
+    private Double percentage = 0.0;
+
+    private Double turnover;
+
+    public Double getTurnover() {
+        return turnover;
+    }
+
+    public void setTurnover(Double turnover) {
+        this.turnover = turnover;
+    }
+
+    public Double getPercentage() {
+        return percentage;
+    }
+
+    public void setPercentage(Double percentage) {
+        this.percentage = percentage;
+    }
+
     public Long getId() {
         return id;
     }

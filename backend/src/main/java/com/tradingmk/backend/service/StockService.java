@@ -8,6 +8,9 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
+
+
 
 @Service
 public class StockService {
@@ -20,15 +23,24 @@ public class StockService {
     }
 
     public void updateStockPrices(List<Stock> stocks) {
-        for (Stock newStock : stocks) {
-            stockRepository.findBySymbol(newStock.getSymbol()).ifPresentOrElse(existing -> {
-                existing.setCurrentPrice(newStock.getCurrentPrice());
-                existing.setLastUpdated(LocalDateTime.now());
-                stockRepository.save(existing);
-            }, () -> {
-                newStock.setLastUpdated(LocalDateTime.now());
-                stockRepository.save(newStock);
-            });
+        for (Stock incoming : stocks) {
+            Optional<Stock> existing = stockRepository.findBySymbol(incoming.getSymbol());
+
+            if (existing.isPresent()) {
+                Stock stock = existing.get();
+                stock.setCurrentPrice(incoming.getCurrentPrice());
+                stock.setName(incoming.getName());
+                stock.setLastUpdated(LocalDateTime.now());
+                if (incoming.getPercentage() == null) {
+                    incoming.setPercentage(0.0);
+                }
+                stock.setPercentage(incoming.getPercentage());
+                stock.setTurnover(incoming.getTurnover());
+                stockRepository.save(stock);
+            } else {
+                incoming.setLastUpdated(LocalDateTime.now());
+                stockRepository.save(incoming);
+            }
         }
     }
 }
