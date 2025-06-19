@@ -1,8 +1,16 @@
 import requests
 from bs4 import BeautifulSoup
-
+import time
 BASE_URL = "https://www.mse.mk"
 
+
+def run_scraper_loop(interval=30):
+    while True:
+        print("Updating stock data...")
+        stocks = get_stocks()
+        post_to_backend(stocks)
+        print("Update done. Waiting...")
+        time.sleep(interval)
 
 def get_stock_name(detail_url):
     response = requests.get(detail_url)
@@ -13,8 +21,8 @@ def get_stock_name(detail_url):
     if name_element:
         return name_element.text.strip()
 
-
     return "Unknown"
+
 
 
 def get_stocks():
@@ -36,15 +44,20 @@ def get_stocks():
             detail_url = BASE_URL + detail_path
 
             name = get_stock_name(detail_url)
+            current_price = float(cols[1].text.strip().replace(",", ""))
+            percentage = float(cols[2].text.strip())
+            turnover = float(cols[3].text.strip().replace(",", ""))
+            print(percentage)
+            if name != "Unknown":
+                stock = {
+                    "symbol": symbol,
+                    "name": name if name != "Unknown" else symbol,
+                    "currentPrice": current_price,
+                    "percentage": percentage if percentage != 0.0 else 0.0,
+                    "turnover":turnover
+                }
+                stocks.append(stock)
 
-
-
-            stock = {
-                "symbol": symbol,
-                "name": name,
-                "currentPrice": float(cols[1].text.strip().replace(",", "")),
-            }
-            stocks.append(stock)
 
     return stocks
 
@@ -56,5 +69,5 @@ def post_to_backend(stocks):
 
 
 if __name__ == "__main__":
-    data = get_stocks()
-    post_to_backend(data)
+    run_scraper_loop(interval=30)
+
