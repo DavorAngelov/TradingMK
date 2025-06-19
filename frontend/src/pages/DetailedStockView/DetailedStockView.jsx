@@ -130,7 +130,7 @@ const DetailedStockView = () => {
 
                     {/* Buy BTC Button */}
                     <button className="w-full bg-gradient-to-r from-green-400 to-blue-500 text-white py-3 rounded-lg font-medium mb-4">
-                        Buy ALK
+                        Buy
                     </button>
 
 
