@@ -1,14 +1,12 @@
 package com.tradingmk.backend.model;
 
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
 
 @Entity
+@Table(name = "stock", uniqueConstraints = @UniqueConstraint(columnNames = "symbol"))
 public class Stock {
 
 
