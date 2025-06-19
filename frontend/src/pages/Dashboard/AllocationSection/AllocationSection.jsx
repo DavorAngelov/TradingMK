@@ -1,22 +1,31 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import {Link} from "react-router-dom";
 
 const AllocationSection = () => {
-    const allocations = [
-        {
-            name: 'Комерцијална банка АД Скопје',
-            symbol: 'KMB',
-            percentage: -1.04,
-            amount: '27.065,02',
-            color: 'bg-red-300'
-        },
-        {name: 'Алкалоид АД Скопје', symbol: 'ALK', percentage: -1.48, amount: '24.469,01', color: 'bg-red-300'},
-        {name: 'Макпетрол АД Скопје', symbol: 'MPT', percentage: -1.35, amount: '109.500,00', color: 'bg-red-300'},
-        {name: 'Реплек АД Скопје', symbol: 'REPL', percentage: 0.01, amount: '1.799,56', color: 'bg-green-300'},
-        {name: 'Гранит АД Скопје', symbol: 'GRNT', percentage: 0.01, amount: '1.799,56', color: 'bg-green-300'},
-        {name: 'Македонски Телеком АД – Скопје', symbol: 'TEL', percentage: 0.36, amount: '440,00',color: 'bg-green-300'},
-        {name: 'НЛБ Банка АД Скопје', symbol: 'TNB', percentage: 0.00, amount: '57.960,00',color:'bg-gray-200'},
-    ];
+    // const allocations = [
+    //     {
+    //         name: 'Комерцијална банка АД Скопје',
+    //         symbol: 'KMB',
+    //         percentage: -1.04,
+    //         amount: '27.065,02',
+    //         color: 'bg-red-300'
+    //     },
+    //     {name: 'Алкалоид АД Скопје', symbol: 'ALK', percentage: -1.48, amount: '24.469,01', color: 'bg-red-300'},
+    //     {name: 'Макпетрол АД Скопје', symbol: 'MPT', percentage: -1.35, amount: '109.500,00', color: 'bg-red-300'},
+    //     {name: 'Реплек АД Скопје', symbol: 'REPL', percentage: 0.01, amount: '1.799,56', color: 'bg-green-300'},
+    //     {name: 'Гранит АД Скопје', symbol: 'GRNT', percentage: 0.01, amount: '1.799,56', color: 'bg-green-300'},
+    //     {name: 'Македонски Телеком АД – Скопје', symbol: 'TEL', percentage: 0.36, amount: '440,00',color: 'bg-green-300'},
+    //     {name: 'НЛБ Банка АД Скопје', symbol: 'TNB', percentage: 0.00, amount: '57.960,00',color:'bg-gray-200'},
+    // ];
+
+    const [stocks, setStocks] = useState([]);
+
+    useEffect(() => {
+        fetch("http://localhost:8080/api/stocks")
+            .then((res) => res.json())
+            .then((data) => setStocks(data))
+            .catch((err) => console.error("Error fetching stocks:", err));
+    }, []);
 
 
 
@@ -29,12 +38,10 @@ const AllocationSection = () => {
                 <div className="space-y-4 ">
                     {/* Main allocation blocks */}
                     <div className="grid grid-cols-2 gap-2 ">
-                        {allocations.map((token, index) => (
+                        {stocks.map((token) => (
                             <Link to="/detailed"
                                 key={token.symbol}
-                                className={`${token.color} p-4 rounded-lg text-gray-800 ${
-                                    index < 2 ? 'col-span-1' : 'col-span-1'
-                                }  'h-24'`}
+                                className={`${token.percentage < 0 ? 'bg-red-300' : token.percentage > 0 ? 'bg-green-300' : 'bg-gray-200'} p-4 rounded-lg text-gray-800 'h-24'`}
                             >
                                 <div className="flex items-center gap-2 mb-2">
                                     <div className="w-7 h-7 bg-black rounded-full flex items-center justify-center">
@@ -48,7 +55,7 @@ const AllocationSection = () => {
                                     </div>
                                 </div>
                                 <div className="flex justify-between items-end">
-                                    <span className="font-bold text-lg">{token.amount}</span>
+                                    <span className="font-bold text-lg">{token.currentPrice} MKD</span>
                                     <span className="text-sm">{token.percentage}%</span>
                                 </div>
                             </Link>

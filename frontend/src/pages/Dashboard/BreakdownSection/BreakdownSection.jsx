@@ -1,30 +1,17 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import { ChevronRight } from 'lucide-react';
 
 const BreakdownSection = () => {
-    const tokens = [
-        {
-            name: 'Комерцијална банка АД Скопје',
-            symbol: 'KMB',
-            value: '4.086.818 MKD',
-            allocation: '-1.04',
-            price: '27.065,02 MKD',
-        },
-        {
-            name: 'Алкалоид АД Скопје',
-            symbol: 'ALK',
-            value: '2.740.529 MKD',
-            allocation: '-1.48',
-            price: '24.469,01 MKD',
-        },
-        {
-            name: 'Макпетрол АД Скопје',
-            symbol: 'MPT',
-            value: '438.000 MKD',
-            allocation: '-1.35',
-            price: '109.500,00 MKD',
-        },
-    ];
+    const [stocks, setStocks] = useState([]);
+
+    useEffect(() => {
+        fetch("http://localhost:8080/api/stocks")
+            .then((res) => res.json())
+            .then((data) => setStocks(data))
+            .catch((err) => console.error("Error fetching stocks:", err));
+    }, []);
+
+
 
     return (
         <div className="bg-white/80 backdrop-blur-sm border border-gray-200 rounded-lg shadow-sm">
@@ -44,7 +31,7 @@ const BreakdownSection = () => {
                         </tr>
                         </thead>
                         <tbody>
-                        {tokens.map((token, index) => (
+                        {stocks.map((token) => (
                             <tr key={token.symbol} className="border-b border-gray-100 hover:bg-gray-50 transition-colors">
                                 <td className="py-4">
                                     <div className="flex items-center gap-3">
@@ -57,13 +44,13 @@ const BreakdownSection = () => {
                                         </div>
                                     </div>
                                 </td>
-                                <td className="py-4 text-right font-medium text-gray-900">{token.value}</td>
+                                <td className="py-4 text-right font-medium text-gray-900">{token.turnover}</td>
                                 <td className="py-4 text-right">
                     <span className="bg-gray-100 text-gray-800 px-2 py-1 rounded text-sm">
-                       {token.allocation}
+                       {token.percentage} %
                     </span>
                                 </td>
-                                <td className="py-4 text-right font-medium text-gray-900">{token.price}</td>
+                                <td className="py-4 text-right font-medium text-gray-900">{token.currentPrice}</td>
                                 <td className="py-4">
                                     <ChevronRight className="w-4 h-4 text-gray-400" />
                                 </td>
