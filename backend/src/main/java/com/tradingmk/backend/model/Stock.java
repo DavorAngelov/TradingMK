@@ -1,6 +1,7 @@
 package com.tradingmk.backend.model;
 
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
@@ -16,8 +17,21 @@ public class Stock {
 
     private String symbol;
     private String name;
+
+    @JsonProperty("currentPrice")
     private Double currentPrice;
+
     private LocalDateTime lastUpdated;
+    private Double lastPrice;
+    public Double getLastPrice() {
+        return lastPrice;
+    }
+
+    public void setLastPrice(Double lastPrice) {
+        this.lastPrice = lastPrice;
+    }
+
+
 
     @Column(nullable = false)
     private Double percentage = 0.0;

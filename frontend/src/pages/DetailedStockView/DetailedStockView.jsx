@@ -128,13 +128,13 @@ const DetailedStockView = () => {
 
                     </div>
 
-                    {/* Buy BTC Button */}
+
                     <button className="w-full bg-gradient-to-r from-green-400 to-blue-500 text-white py-3 rounded-lg font-medium mb-4">
                         Buy
                     </button>
 
 
-                    {/* Available Balance Card */}
+
                     <div className="bg-gray-50 rounded-lg p-4">
                         <div className="text-sm text-gray-500 mb-2">Available Balance</div>
                         <div className="flex items-baseline space-x-2 mb-4">

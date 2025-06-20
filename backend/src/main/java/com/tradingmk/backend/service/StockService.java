@@ -28,7 +28,7 @@ public class StockService {
 
             if (existing.isPresent()) {
                 Stock stock = existing.get();
-                stock.setCurrentPrice(incoming.getCurrentPrice());
+                stock.setLastPrice(incoming.getLastPrice());
                 stock.setName(incoming.getName());
                 stock.setLastUpdated(LocalDateTime.now());
                 if (incoming.getPercentage() == null) {
@@ -36,9 +36,14 @@ public class StockService {
                 }
                 stock.setPercentage(incoming.getPercentage());
                 stock.setTurnover(incoming.getTurnover());
+                stock.setCurrentPrice(incoming.getCurrentPrice());
+                System.out.println("Received stock: " + stock.getSymbol() + " with currentPrice: " + stock.getCurrentPrice());
+                System.out.println("Before save: " + stock.getCurrentPrice());
                 stockRepository.save(stock);
+                System.out.println("afterr save: " + stock.getCurrentPrice());
             } else {
                 incoming.setLastUpdated(LocalDateTime.now());
+
                 stockRepository.save(incoming);
             }
         }

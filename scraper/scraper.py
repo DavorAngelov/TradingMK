@@ -1,13 +1,16 @@
+from ctypes.wintypes import DOUBLE
+
 import requests
 from bs4 import BeautifulSoup
 import time
 BASE_URL = "https://www.mse.mk"
-
+import json
 
 def run_scraper_loop(interval=30):
     while True:
         print("Updating stock data...")
         stocks = get_stocks()
+        print(stocks)
         post_to_backend(stocks)
         print("Update done. Waiting...")
         time.sleep(interval)
@@ -30,8 +33,21 @@ def get_stocks():
     response = requests.get(url)
     soup = BeautifulSoup(response.text, "html.parser")
 
-    stocks = []
 
+    current_prices = {}
+    for li in soup.select(".newsticker a"):
+        parts = li.text.strip().split(" ")
+        if len(parts) >= 2:
+            ticker = parts[0]
+            price_str = parts[1].replace(",", "")
+            try:
+                current_price = float(price_str)
+                current_prices[ticker] = current_price
+            except ValueError:
+                continue
+
+
+    stocks = []
     for row in soup.select(".tab-content-market-summary table tr")[1:]:
         cols = row.find_all("td")
         if len(cols) >= 3:
@@ -44,23 +60,23 @@ def get_stocks():
             detail_url = BASE_URL + detail_path
 
             name = get_stock_name(detail_url)
-            current_price = float(cols[1].text.strip().replace(",", ""))
+            last_price = float(cols[1].text.strip().replace(",", ""))
             percentage = float(cols[2].text.strip())
             turnover = float(cols[3].text.strip().replace(",", ""))
-            print(percentage)
-            if name != "Unknown":
-                stock = {
-                    "symbol": symbol,
-                    "name": name if name != "Unknown" else symbol,
-                    "currentPrice": current_price,
-                    "percentage": percentage if percentage != 0.0 else 0.0,
-                    "turnover":turnover
-                }
-                stocks.append(stock)
 
+            current_price = current_prices.get(symbol, None)
+
+            stock = {
+                "symbol": symbol,
+                "name": name if name != "Unknown" else symbol,
+                "lastPrice": last_price,
+                "percentage": percentage,
+                "turnover": turnover,
+                "currentPrice": current_price
+            }
+            stocks.append(stock)
 
     return stocks
-
 
 def post_to_backend(stocks):
     url = "http://localhost:8080/api/stocks/update"

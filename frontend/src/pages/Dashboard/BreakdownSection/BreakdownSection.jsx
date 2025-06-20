@@ -50,7 +50,7 @@ const BreakdownSection = () => {
                        {token.percentage} %
                     </span>
                                 </td>
-                                <td className="py-4 text-right font-medium text-gray-900">{token.currentPrice}</td>
+                                <td className="py-4 text-right font-medium text-gray-900">{token.lastPrice}</td>
                                 <td className="py-4">
                                     <ChevronRight className="w-4 h-4 text-gray-400" />
                                 </td>
