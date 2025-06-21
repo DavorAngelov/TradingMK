@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.Optional;
 
 
-
 @Service
 public class StockService {
 
@@ -38,12 +37,9 @@ public class StockService {
                 stock.setTurnover(incoming.getTurnover());
                 stock.setCurrentPrice(incoming.getCurrentPrice());
                 System.out.println("Received stock: " + stock.getSymbol() + " with currentPrice: " + stock.getCurrentPrice());
-                System.out.println("Before save: " + stock.getCurrentPrice());
                 stockRepository.save(stock);
-                System.out.println("afterr save: " + stock.getCurrentPrice());
             } else {
                 incoming.setLastUpdated(LocalDateTime.now());
-
                 stockRepository.save(incoming);
             }
         }

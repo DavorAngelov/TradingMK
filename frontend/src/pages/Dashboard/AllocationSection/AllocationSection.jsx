@@ -27,12 +27,14 @@ const AllocationSection = () => {
             .catch((err) => console.error("Error fetching stocks:", err));
     }, []);
 
-
-
     return (
         <div className="bg-white/80 backdrop-blur-sm border border-gray-200 rounded-lg shadow-sm">
-            <div className="flex flex-col space-y-1.5 p-6">
-                <h3 className="text-xl font-semibold text-gray-800">MBI10 Elements</h3>
+            <div className="flex flex-row justify-between space-y-1.5 p-6">
+                <h3 className="text-xl font-semibold text-gray-800 ">MBI10 Elements</h3>
+                {stocks.length > 0 && <h3 className="border-b-2 border-blue-400 rounded-md">{new Date(stocks[0].lastUpdated).toLocaleTimeString([], {
+                    hour: '2-digit',
+                    minute: '2-digit'
+                })}</h3>}
             </div>
             <div className="p-6 pt-0">
                 <div className="space-y-4 ">
@@ -40,8 +42,8 @@ const AllocationSection = () => {
                     <div className="grid grid-cols-2 gap-2 ">
                         {stocks.map((token) => (
                             <Link to="/detailed"
-                                key={token.symbol}
-                                className={`${token.percentage < 0 ? 'bg-red-300' : token.percentage > 0 ? 'bg-green-300' : 'bg-gray-200'} p-4 rounded-lg text-gray-800 'h-24'`}
+                                  key={token.symbol}
+                                  className={`${token.percentage < 0 ? 'bg-red-300' : token.percentage > 0 ? 'bg-green-300' : 'bg-gray-200'} p-4 rounded-lg text-gray-800 'h-24'`}
                             >
                                 <div className="flex items-center gap-2 mb-2">
                                     <div className="w-7 h-7 bg-black rounded-full flex items-center justify-center">
