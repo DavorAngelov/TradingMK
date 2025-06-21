@@ -1,36 +1,72 @@
-import React, { useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import { LineChart, Line, XAxis, YAxis, ResponsiveContainer } from 'recharts';
 import { TrendingUp, Settings, Search, RotateCcw } from 'lucide-react';
 import Menu from "../Menu/Menu.jsx";
+import {useParams} from "react-router-dom";
 
 const DetailedStockView = () => {
-    const [selectedTimeframe, setSelectedTimeframe] = useState('24h');
+    const [selectedTimeframe, setSelectedTimeframe] = useState('1m');
+    const { symbol } = useParams();
+    const [chartData, setChartData] = useState([]);
+    const [currentPrice, setCurrentPrice] = useState(null);
+    const [percentage,setPercentage] = useState(null);
 
-    // Sample chart data
-    const chartData = [
-        { time: '8:00 AM', price: 3560 },
-        { time: '10:00 AM', price: 3590 },
-        { time: '12:00 PM', price: 3600 },
-        { time: '2:00 PM', price: 3580 },
-        { time: '4:00 PM', price: 3615 }
-    ];
+    useEffect(() => {
+        // Make sure symbol is defined before fetching
+        if (!symbol) return;
 
+        const from = '2025-05-26'; // Adjust as needed
+        const to = '2025-06-20';   // You could calculate this dynamically
+
+        fetch(`http://localhost:8080/api/history/${symbol}?from=${from}&to=${to}`)
+            .then(res => res.json())
+            .then(data => {
+                const sorted = data.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+                setChartData(sorted);
+                console.log(sorted)
+            })
+            .catch(err => console.error("Fetch error:", err));
+
+        fetch(`http://localhost:8080/api/stocks`)
+            .then(res => res.json())
+            .then(data => {
+                const stock = data.find(stock => stock.symbol === symbol);
+                setCurrentPrice(stock ? stock.currentPrice : null);
+            })
+            .catch(err => console.error("Error fetching current price:", err));
+    }, [symbol]);
+
+
+    const calculatePercentageChange = (data) => {
+        if (data.length < 2) return 0;
+        const firstPrice = data[0].price;
+        const lastPrice = data[data.length - 1].price;
+        return ((lastPrice - firstPrice) / firstPrice) * 100;
+    };
+
+    useEffect(() => {
+        if (chartData.length > 0) {
+            const percentageChange = calculatePercentageChange(chartData);
+            const formattedPercentageChange = percentageChange.toFixed(2);
+            console.log(`Percentage Change: ${percentageChange.toFixed(2)}%`);
+            setPercentage(formattedPercentageChange)
+        }
+    }, [chartData]);
 
     return (
         <div className="min-h-screen bg-white text-gray-900">
             <Menu/>
 
             <div className="flex mt-20 border backdrop-blur-md shadow-lg rounded-xl bg-white/20 border-blue-100">
-                {/* Main Chart Section */}
                 <div className="flex-1 p-6">
-                    {/* Token Header */}
+
                     <div className="flex items-center justify-between mb-6">
                         <div className="flex items-center space-x-4">
                             <div className="flex items-center space-x-2">
                                 <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
                                     <span className="text-white font-bold text-sm">Ξ</span>
                                 </div>
-                                <span className="text-xl font-semibold">ALK</span>
+                                <span className="text-xl font-semibold">{symbol}</span>
                             </div>
                         </div>
                         <div className="flex items-center space-x-4">
@@ -38,13 +74,14 @@ const DetailedStockView = () => {
                         </div>
                     </div>
 
-                    {/* Price Display */}
+
                     <div className="mb-6">
                         <div className="flex items-baseline space-x-4">
-                            <span className="text-4xl font-bold">24.436 MKD</span>
-                            <span className="text-green-500 font-medium">+3.27% today</span>
+                            <span className="text-4xl font-bold">{currentPrice}</span>
+                            <span className={`${percentage < 0 ? 'text-red-400' : percentage > 0 ? 'text-green-400' : 'text-gray-200'} font-medium`}>{percentage}</span>
                         </div>
                     </div>
+
 
                     {/* Timeframe Selector */}
                     <div className="flex space-x-4 mb-6">

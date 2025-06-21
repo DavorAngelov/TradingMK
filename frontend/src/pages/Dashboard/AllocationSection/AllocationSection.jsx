@@ -41,7 +41,7 @@ const AllocationSection = () => {
                     {/* Main allocation blocks */}
                     <div className="grid grid-cols-2 gap-2 ">
                         {stocks.map((token) => (
-                            <Link to="/detailed"
+                            <Link to={`/detailed/${token.symbol}`}
                                   key={token.symbol}
                                   className={`${token.percentage < 0 ? 'bg-red-300' : token.percentage > 0 ? 'bg-green-300' : 'bg-gray-200'} p-4 rounded-lg text-gray-800 'h-24'`}
                             >
