@@ -15,6 +15,8 @@ public class User {
     private String password;
     private String fullName;
     private Double balance;
+    private String email;
+
 
     public Long getId() {
         return id;
@@ -54,5 +56,13 @@ public class User {
 
     public void setBalance(Double balance) {
         this.balance = balance;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 }

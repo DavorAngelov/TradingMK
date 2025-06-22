@@ -145,7 +145,7 @@ const DetailedStockView = () => {
                         <input
                             type="text"
                             className="text-2xl font-bold mb-1"
-                            value="2"
+                            value="0"
                         />
 
                     </div>
@@ -161,7 +161,7 @@ const DetailedStockView = () => {
                             </div>
                             <span className="text-sm text-gray-500">You Spend</span>
                         </div>
-                        <div className="text-2xl font-bold mb-1">44.430</div>
+                        <div className="text-2xl font-bold mb-1">0</div>
 
                     </div>
 
@@ -175,13 +175,13 @@ const DetailedStockView = () => {
                     <div className="bg-gray-50 rounded-lg p-4">
                         <div className="text-sm text-gray-500 mb-2">Available Balance</div>
                         <div className="flex items-baseline space-x-2 mb-4">
-                            <span className="text-xl font-bold">293.300 MKD</span>
+                            <span className="text-xl font-bold">0.00 MKD</span>
 
                         </div>
                         <div className="grid grid-cols-3 gap-4 text-sm">
                             <div>
                                 <div className="text-gray-500 mb-1">Estimate fee</div>
-                                <div className="font-medium">430 MKD</div>
+                                <div className="font-medium">0 MKD</div>
                             </div>
 
                         </div>

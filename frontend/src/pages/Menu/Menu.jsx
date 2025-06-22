@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
-import { NavLink } from 'react-router-dom';
+import {NavLink, useNavigate} from 'react-router-dom';
 import profilePic from '../../assets/images/davor-picture.jpg';
 import { ChevronDown, LogOut, Settings } from 'lucide-react';
 
 const Menu = () => {
     const [open, setOpen] = useState(false);
+    const navigate = useNavigate();
 
     const toggleDropdown = () => setOpen(!open);
 
@@ -40,7 +41,7 @@ const Menu = () => {
                         alt="Profile"
                         className="w-10 h-10 rounded-full object-cover"
                     />
-                    <span className="font-medium">Davor Angelov</span>
+                    <span className="font-medium">Davor</span>
                     <button
                         className="flex items-center space-x-2 hover:text-gray-600 focus:outline-none"
                         onClick={toggleDropdown}
@@ -63,6 +64,7 @@ const Menu = () => {
                             </NavLink>
                             <button
                                 className="w-full cursor-pointer text-left px-4 py-2 hover:bg-gray-100 text-sm rounded-xl text-red-500 flex gap-2"
+                                onClick={() => navigate("/")}
                             >
                                 <LogOut />
                                 Logout

@@ -9,6 +9,8 @@ import AllocationSection from "./pages/Dashboard/AllocationSection/AllocationSec
 import Dashboard from "./pages/Dashboard/Dashboard.jsx";
 import LandingPage from "./pages/LandingPage/LandingPage.jsx";
 import DetailedStockView from "./pages/DetailedStockView/DetailedStockView.jsx";
+import SignupPage from "./pages/Signup-Login/SignupPage.jsx";
+import LoginPage from "./pages/Signup-Login/LoginPage.jsx";
 
 createRoot(document.getElementById('root')).render(
 
@@ -16,7 +18,9 @@ createRoot(document.getElementById('root')).render(
             <Routes>
                 <Route path="/dashboard" element={<Dashboard/>}></Route>
                 <Route path="/" element={<LandingPage/>}></Route>
-                <Route path="/detailed" element={<DetailedStockView/>}></Route>
+                <Route path="/detailed/:symbol" element={<DetailedStockView/>}></Route>
+                <Route path="/signup" element={<SignupPage />} />
+                <Route path="/login" element={<LoginPage />} />
             </Routes>
         </BrowserRouter>
 
