@@ -1,18 +1,19 @@
 import React, { useState } from 'react';
 import {NavLink, useNavigate} from 'react-router-dom';
 import profilePic from '../../assets/images/davor-picture.jpg';
+import defaultPic from '../../assets/images/default-profile.png'
 import { ChevronDown, LogOut, Settings } from 'lucide-react';
 
 const Menu = () => {
     const [open, setOpen] = useState(false);
     const navigate = useNavigate();
+    const username = localStorage.getItem('username');
 
     const toggleDropdown = () => setOpen(!open);
 
     return (
         <nav className="w-full fixed top-0 left-0 bg-white/20 text-black backdrop-blur-md shadow-lg rounded-xl z-50 border border-blue-100">
             <div className="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
-                {/* Left side: Logo + navigation */}
                 <div className="flex items-center space-x-6">
                     <div className="text-xl font-bold">Trading<span className="text-blue-400">MK</span></div>
                     <NavLink
@@ -37,11 +38,11 @@ const Menu = () => {
                 <div className="relative flex items-center gap-2">
                     <NavLink to="/analysis" className="mr-20 hover:text-gray-600">Analysis</NavLink>
                     <img
-                        src={profilePic}
+                        src={defaultPic}
                         alt="Profile"
                         className="w-10 h-10 rounded-full object-cover"
                     />
-                    <span className="font-medium">Davor</span>
+                    <span className="font-medium">{username}</span>
                     <button
                         className="flex items-center space-x-2 hover:text-gray-600 focus:outline-none"
                         onClick={toggleDropdown}
@@ -64,7 +65,7 @@ const Menu = () => {
                             </NavLink>
                             <button
                                 className="w-full cursor-pointer text-left px-4 py-2 hover:bg-gray-100 text-sm rounded-xl text-red-500 flex gap-2"
-                                onClick={() => navigate("/")}
+                                onClick={() => { localStorage.removeItem('username'); navigate("/")}}
                             >
                                 <LogOut />
                                 Logout

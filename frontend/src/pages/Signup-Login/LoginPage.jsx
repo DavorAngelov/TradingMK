@@ -17,6 +17,7 @@ const LoginPage = () => {
 
         if (response.ok) {
             navigate('/dashboard');
+            localStorage.setItem('username', username);
         } else {
             throw new Error(await response.text());
         }

@@ -31,7 +31,7 @@ const AllocationSection = () => {
         <div className="bg-white/80 backdrop-blur-sm border border-gray-200 rounded-lg shadow-sm">
             <div className="flex flex-row justify-between space-y-1.5 p-6">
                 <h3 className="text-xl font-semibold text-gray-800 ">MBI10 Elements</h3>
-                {stocks.length > 0 && <h3 className="border-b-2 border-blue-400 rounded-md">{new Date(stocks[0].lastUpdated).toLocaleTimeString([], {
+                {stocks.length > 0 && <h3 className="border-b-2 border-blue-400 rounded-md">{new Date(stocks[2].lastUpdated).toLocaleTimeString([], {
                     hour: '2-digit',
                     minute: '2-digit'
                 })}</h3>}

@@ -24,12 +24,11 @@ const EvaluationSection = () => {
                         <TrendingUp className="w-4 h-4 text-green-500" />
                     </div>
 
-                    {/* Chart placeholder */}
                     <div className="h-32 bg-gray-50 rounded-lg flex items-center justify-center border-2 border-dashed border-gray-200">
                         <span className="text-gray-400">Portfolio Performance Chart</span>
                     </div>
 
-                    {/* Bottom metrics */}
+
                     <div className="grid grid-cols-2 gap-7 pt-4 border-t border-gray-100">
                         <div>
                             <div className="text-sm text-gray-600">Total profit</div>
@@ -44,7 +43,7 @@ const EvaluationSection = () => {
                         </div>
                     </div>
 
-                    {/* Score section */}
+
                     <div className="grid grid-cols-1 gap-4 pt-4 border-t border-gray-100">
                         <div className="text-center">
                             <div className="text-sm text-gray-600 mb-2">Portfolio score</div>

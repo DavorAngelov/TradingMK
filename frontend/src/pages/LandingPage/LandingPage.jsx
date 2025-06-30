@@ -8,7 +8,7 @@ const LandingPage = () => {
 
     return (
         <div className="min-h-screen">
-            {/* Navigation */}
+
             <nav className="flex items-center justify-between px-8 py-6">
                 <div className="flex items-center space-x-2">
                     <span className="text-2xl font-bold">Trading<span className="text-blue-400">MK</span></span>

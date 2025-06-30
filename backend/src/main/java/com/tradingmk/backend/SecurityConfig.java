@@ -17,7 +17,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
                                 "/api/auth/**",
-                                "/api/stocks/update",  // 👈 allow the scraper to POST here
+                                "/api/stocks/update",  // morame allow za da postiras, smeni go~!
                                 "/api/stocks/**",
                                 "/ws/**",
                                 "/topic/**",

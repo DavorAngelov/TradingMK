@@ -23,7 +23,7 @@ public class StockHistoryService {
             history.setSymbol(incoming.getSymbol());
             history.setPrice(incoming.getPrice());
             history.setTimestamp(incoming.getTimestamp());
-            System.out.println("Saving: " + history.getSymbol() + ", " + history.getPrice() + ", " + history.getTimestamp());
+            System.out.println("test saving: " + history.getSymbol() + ", " + history.getPrice() + ", " + history.getTimestamp());
             stockHistoryRepository.save(history);
         }
     }

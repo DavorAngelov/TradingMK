@@ -12,11 +12,10 @@ const DetailedStockView = () => {
     const [percentage,setPercentage] = useState(null);
 
     useEffect(() => {
-        // Make sure symbol is defined before fetching
         if (!symbol) return;
 
-        const from = '2025-05-26'; // Adjust as needed
-        const to = '2025-06-20';   // You could calculate this dynamically
+        const from = '2025-05-26';
+        const to = '2025-06-20';
 
         fetch(`http://localhost:8080/api/history/${symbol}?from=${from}&to=${to}`)
             .then(res => res.json())
@@ -83,7 +82,7 @@ const DetailedStockView = () => {
                     </div>
 
 
-                    {/* Timeframe Selector */}
+
                     <div className="flex space-x-4 mb-6">
                         {['24h', '1w', '1m'].map((timeframe) => (
                             <button
@@ -131,7 +130,7 @@ const DetailedStockView = () => {
 
                 {/* Right Sidebar */}
                 <div className="w-80 border-l border-gray-200 p-6">
-                    {/* ETH Balance */}
+
                     <div className="mb-6">
                         <div className="flex items-center justify-between mb-2">
                             <div className="flex items-center space-x-2">

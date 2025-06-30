@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/auth")
-@CrossOrigin(origins = "{http://localhost:5175, http://localhost:5176}") // allow frontend requests
+@CrossOrigin(origins = "{http://localhost:5175, http://localhost:5176},http://localhost:5173}")
 public class AuthController {
 
     @Autowired
@@ -17,15 +17,16 @@ public class AuthController {
 
     @PostMapping("/signup")
     public String signup(@RequestBody User user) {
-
+        //zemi gi podatocite od frontend
         userService.register(user);
-        return "User registered successfully";
+        return "user registered successfully ";
     }
 
     @PostMapping("/login")
     public ResponseEntity<String> login(@RequestBody User loginRequest) {
         User user = userService.login(loginRequest.getUsername(), loginRequest.getPassword());
         if (user != null) {
+
             return ResponseEntity.ok("Login successful");
         } else {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid userna me  or password");
