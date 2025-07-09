@@ -23,7 +23,10 @@ const AllocationSection = () => {
     useEffect(() => {
         fetch("http://localhost:8080/api/stocks")
             .then((res) => res.json())
-            .then((data) => setStocks(data))
+            .then((data) => {
+                const sortedData = data.sort((a, b) => new Date(b.lastUpdated) - new Date(a.lastUpdated));
+                setStocks(sortedData);
+            })
             .catch((err) => console.error("Error fetching stocks:", err));
     }, []);
 
@@ -31,10 +34,7 @@ const AllocationSection = () => {
         <div className="bg-white/80 backdrop-blur-sm border border-gray-200 rounded-lg shadow-sm">
             <div className="flex flex-row justify-between space-y-1.5 p-6">
                 <h3 className="text-xl font-semibold text-gray-800 ">MBI10 Elements</h3>
-                {stocks.length > 0 && <h3 className="border-b-2 border-blue-400 rounded-md">{new Date(stocks[2].lastUpdated).toLocaleTimeString([], {
-                    hour: '2-digit',
-                    minute: '2-digit'
-                })}</h3>}
+                    <h3 className=""><span className="w-2 h-2 bg-blue-400 rounded-full inline-block mr-2"></span>Last update of the price</h3>
             </div>
             <div className="p-6 pt-0">
                 <div className="space-y-4 ">
@@ -54,8 +54,23 @@ const AllocationSection = () => {
                                     <div>
                                         <div className="font-medium text-sm">{token.name}</div>
                                         <div className="text-xs opacity-75">{token.symbol}</div>
+
+                                    </div>
+                                    <div className="text-xs text-gray-600 border-b-2 border-blue-400 rounded-md ml-auto">
+                                        {new Date(token.lastUpdated).toLocaleDateString([], {
+                                            year: 'numeric',
+                                            month: '2-digit',
+                                            day: '2-digit'
+                                        })}{' '}
+                                        {new Date(token.lastUpdated).toLocaleTimeString([], {
+                                            hour: '2-digit',
+                                            minute: '2-digit'
+                                        })}
                                     </div>
                                 </div>
+
+
+
                                 <div className="flex justify-between items-end">
                                     <span className="font-bold text-lg">{token.currentPrice} MKD</span>
                                     <span className="text-sm">{token.percentage}%</span>
