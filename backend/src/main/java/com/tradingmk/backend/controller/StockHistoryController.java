@@ -22,9 +22,6 @@ public class StockHistoryController {
 
     @PostMapping("/upload")
     public ResponseEntity<Void> saveHistory(@RequestBody List<StockHistory> histories) {
-        for (StockHistory s : histories) {
-            System.out.println("Received: " + s.getSymbol() + ", " + s.getPrice() + ", " + s.getTimestamp());
-        }
         stockHistoryService.saveAll(histories);
         return ResponseEntity.ok().build();
     }

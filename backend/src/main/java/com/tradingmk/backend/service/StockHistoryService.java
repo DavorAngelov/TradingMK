@@ -18,6 +18,7 @@ public class StockHistoryService {
     private StockHistoryRepository stockHistoryRepository;
 
     public void saveAll(List<StockHistory> histories) {
+
         for (StockHistory incoming : histories) {
             StockHistory history = new StockHistory();
             history.setSymbol(incoming.getSymbol());
@@ -26,6 +27,7 @@ public class StockHistoryService {
             System.out.println("test saving: " + history.getSymbol() + ", " + history.getPrice() + ", " + history.getTimestamp());
             stockHistoryRepository.save(history);
         }
+
     }
 
     public List<StockHistory> getHistoryForSymbol(String symbol, LocalDate from, LocalDate to) {

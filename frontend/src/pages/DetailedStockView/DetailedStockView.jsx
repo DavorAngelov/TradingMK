@@ -1,23 +1,32 @@
 import React, {useEffect, useState} from 'react';
-import { LineChart, Line, XAxis, YAxis, ResponsiveContainer } from 'recharts';
-import { TrendingUp, Settings, Search, RotateCcw } from 'lucide-react';
+import {LineChart, Line, XAxis, YAxis, ResponsiveContainer} from 'recharts';
+import {TrendingUp, Settings, Search, RotateCcw} from 'lucide-react';
 import Menu from "../Menu/Menu.jsx";
 import {useParams} from "react-router-dom";
 
 const DetailedStockView = () => {
     const [selectedTimeframe, setSelectedTimeframe] = useState('1m');
-    const { symbol } = useParams();
+    const {symbol} = useParams();
     const [chartData, setChartData] = useState([]);
     const [currentPrice, setCurrentPrice] = useState(null);
-    const [percentage,setPercentage] = useState(null);
+    const [percentage, setPercentage] = useState(null);
 
     useEffect(() => {
-        if (!symbol) return;
+        if (!symbol || !selectedTimeframe) return;
 
-        const from = '2025-05-26';
-        const to = '2025-06-20';
+        let from, to;
+        const now = new Date();
 
-        fetch(`http://localhost:8080/api/history/${symbol}?from=${from}&to=${to}`)
+        if (selectedTimeframe === '1w') {
+            from = new Date(now);
+            from.setDate(now.getDate() - 7); //1week
+            to = now;
+        } else if (selectedTimeframe === '1m') {
+            from = new Date(now);
+            from.setMonth(now.getMonth() - 1); // 1month
+            to = now;
+        }
+        fetch(`http://localhost:8080/api/history/${symbol}?from=${from.toISOString().split('T')[0]}&to=${to.toISOString().split('T')[0]}`)
             .then(res => res.json())
             .then(data => {
                 const sorted = data.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
@@ -33,7 +42,7 @@ const DetailedStockView = () => {
                 setCurrentPrice(stock ? stock.currentPrice : null);
             })
             .catch(err => console.error("Error fetching current price:", err));
-    }, [symbol]);
+    }, [symbol,selectedTimeframe]);
 
 
     const calculatePercentageChange = (data) => {
@@ -69,7 +78,7 @@ const DetailedStockView = () => {
                             </div>
                         </div>
                         <div className="flex items-center space-x-4">
-                            <TrendingUp className="w-5 h-5 text-gray-400" />
+                            <TrendingUp className="w-5 h-5 text-gray-400"/>
                         </div>
                     </div>
 
@@ -77,14 +86,16 @@ const DetailedStockView = () => {
                     <div className="mb-6">
                         <div className="flex items-baseline space-x-4">
                             <span className="text-4xl font-bold">{currentPrice}</span>
-                            <span className={`${percentage < 0 ? 'text-red-400' : percentage > 0 ? 'text-green-400' : 'text-gray-200'} font-medium`}>{percentage}</span>
+                            <span
+                                className={`${percentage < 0 ? 'text-red-400' : percentage > 0 ? 'text-green-400' : 'text-gray-200'} font-medium`}>
+    {percentage !== null ? `${percentage} %` : ''}
+</span>
                         </div>
                     </div>
 
 
-
                     <div className="flex space-x-4 mb-6">
-                        {['24h', '1w', '1m'].map((timeframe) => (
+                        {[ '1w', '1m'].map((timeframe) => (
                             <button
                                 key={timeframe}
                                 onClick={() => setSelectedTimeframe(timeframe)}
@@ -107,13 +118,13 @@ const DetailedStockView = () => {
                                     dataKey="time"
                                     axisLine={false}
                                     tickLine={false}
-                                    tick={{ fill: '#6B7280', fontSize: 12 }}
+                                    tick={{fill: '#6B7280', fontSize: 12}}
                                 />
                                 <YAxis
                                     domain={['dataMin - 20', 'dataMax + 20']}
                                     axisLine={false}
                                     tickLine={false}
-                                    tick={{ fill: '#6B7280', fontSize: 12 }}
+                                    tick={{fill: '#6B7280', fontSize: 12}}
                                 />
                                 <Line
                                     type="monotone"
@@ -121,7 +132,7 @@ const DetailedStockView = () => {
                                     stroke="#10B981"
                                     strokeWidth={2}
                                     dot={false}
-                                    activeDot={{ r: 4, stroke: '#10B981', strokeWidth: 2 }}
+                                    activeDot={{r: 4, stroke: '#10B981', strokeWidth: 2}}
                                 />
                             </LineChart>
                         </ResponsiveContainer>
@@ -165,10 +176,10 @@ const DetailedStockView = () => {
                     </div>
 
 
-                    <button className="w-full bg-gradient-to-r from-green-400 to-blue-500 text-white py-3 rounded-lg font-medium mb-4">
+                    <button
+                        className="w-full bg-gradient-to-r from-green-400 to-blue-500 text-white py-3 rounded-lg font-medium mb-4">
                         Buy
                     </button>
-
 
 
                     <div className="bg-gray-50 rounded-lg p-4">
