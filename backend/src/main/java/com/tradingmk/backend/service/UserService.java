@@ -28,4 +28,9 @@ public class UserService {
                 .filter(user -> passwordEncoder.matches(rawPassword, user.getPassword()))
                 .orElse(null);
     }
+
+    public String extractUsername(String token) {
+        return null;
+
+    }
 }
