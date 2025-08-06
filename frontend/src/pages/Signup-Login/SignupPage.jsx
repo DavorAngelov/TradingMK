@@ -10,7 +10,7 @@ const SignupPage = () => {
     const navigate = useNavigate();
 
     const signup = async () => {
-        const response = await fetch('http://localhost:8080/api/auth/signup', {
+        const response = await fetch('http://localhost:8080/api/auth/register', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ username, email, password })
@@ -18,7 +18,6 @@ const SignupPage = () => {
 
         if (response.ok) {
             navigate('/dashboard');
-            localStorage.setItem('username', username);
         }else{
             throw new Error(await response.text());
         }

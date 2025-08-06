@@ -63,8 +63,3 @@ if __name__ == '__main__':
     post_history_to_backend("TTK")
     post_history_to_backend("GRNT")
     post_history_to_backend("MTUR")
-
-
-
-
-
