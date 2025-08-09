@@ -11,17 +11,30 @@ const LoginPage = () => {
     const login = async () => {
         const response = await fetch('http://localhost:8080/api/auth/authenticate', {
             method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({username, password})
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username, password })
         });
 
-        if (response.ok) {
-            navigate('/dashboard');
-        } else {
+        if (!response.ok) {
             throw new Error(await response.text());
         }
 
-        return response.text();
+        const data = await response.json();
+        const token = data.token;
+
+
+        localStorage.setItem('accessToken', token);
+
+        //decode
+        try {
+            const { jwtDecode } = await import('jwt-decode');
+            const decoded = jwtDecode(token);
+            localStorage.setItem('username', decoded.sub); // sub contains usernamere
+        } catch (err) {
+            console.error('Failed to decode token:', err);
+        }
+
+        return "Login successful!";
     };
 
     const handleLogin = async (e) => {
@@ -32,6 +45,7 @@ const LoginPage = () => {
         try {
             const message = await login();
             setSuccess(message);
+            navigate('/dashboard');
         } catch (err) {
             setError(err.message || 'Login failed');
         }

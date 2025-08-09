@@ -3,11 +3,20 @@ import {NavLink, useNavigate} from 'react-router-dom';
 import profilePic from '../../assets/images/davor-picture.jpg';
 import defaultPic from '../../assets/images/default-profile.png'
 import { ChevronDown, LogOut, Settings } from 'lucide-react';
+import { jwtDecode } from 'jwt-decode';
 
 const Menu = () => {
     const [open, setOpen] = useState(false);
     const navigate = useNavigate();
-    const username = localStorage.getItem('username');
+    const token = localStorage.getItem('accessToken');
+    let username = '';
+
+    if (token) {
+        const decoded = jwtDecode(token);
+        username = decoded.sub; //username
+    }
+
+    console.log(username);
 
     const toggleDropdown = () => setOpen(!open);
 

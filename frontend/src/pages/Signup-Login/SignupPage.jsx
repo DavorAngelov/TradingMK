@@ -16,15 +16,27 @@ const SignupPage = () => {
             body: JSON.stringify({ username, email, password })
         });
 
-        if (response.ok) {
-            navigate('/dashboard');
-        }else{
+        if (!response.ok) {
             throw new Error(await response.text());
         }
 
-        return response.text();
-    };
+        const data = await response.json();
+        const token = data.token;
 
+
+        localStorage.setItem('accessToken', token);
+
+
+        try {
+            const { jwtDecode } = await import('jwt-decode');
+            const decoded = jwtDecode(token);
+            localStorage.setItem('username', decoded.sub);
+        } catch (err) {
+            console.error('failed to decode token:   ', err);
+        }
+
+        return "signup successfull";
+    };
     const handleSignup = async (e) => {
         e.preventDefault();
         setError('');
