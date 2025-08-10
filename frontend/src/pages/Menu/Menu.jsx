@@ -45,8 +45,11 @@ const Menu = () => {
 
                 {/* Right side: User info */}
                 <div className="relative flex items-center gap-2">
-                    <NavLink to="/analysis" className="mr-20 hover:text-gray-600">Analysis</NavLink>
+                    <NavLink to="/education" className={({ isActive }) =>
+                        isActive ? 'border-b-2 border-blue-400 pb-1 mr-20 hover:text-gray-600' : ' mr-20 hover:text-gray-600'
+                    }>Education</NavLink>
                     <img
+
                         src={defaultPic}
                         alt="Profile"
                         className="w-10 h-10 rounded-full object-cover"

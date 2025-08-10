@@ -62,7 +62,7 @@ const DetailedStockView = () => {
     }, [chartData]);
 
     return (
-        <div className="min-h-screen bg-white text-gray-900">
+        <div className="min-h-screen bg-white text-gray-900  mb-4">
             <Menu/>
 
             <div className="flex mt-20 border backdrop-blur-md shadow-lg rounded-xl bg-white/20 border-blue-100">

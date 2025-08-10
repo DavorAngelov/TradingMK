@@ -12,6 +12,7 @@ import DetailedStockView from "./pages/DetailedStockView/DetailedStockView.jsx";
 import SignupPage from "./pages/Signup-Login/SignupPage.jsx";
 import LoginPage from "./pages/Signup-Login/LoginPage.jsx";
 import Portfolio from "./pages/Portfolio/Portfolio.jsx";
+import Education from "./pages/Education/Education.jsx";
 
 createRoot(document.getElementById('root')).render(
 
@@ -23,6 +24,7 @@ createRoot(document.getElementById('root')).render(
                 <Route path="/signup" element={<SignupPage />} />
                 <Route path="/login" element={<LoginPage />} />
                 <Route path="/portfolio" element={<Portfolio />} />
+                <Route path="/education" element={<Education/>} />
             </Routes>
         </BrowserRouter>
 

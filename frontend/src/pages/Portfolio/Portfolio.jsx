@@ -60,7 +60,7 @@ const Portfolio = () => {
         }
     }, [chartData]);
     return (
-        <div className=" max-w-7xl mx-auto space-y-8 pt-20">
+        <div className=" max-w-7xl mx-auto space-y-8 pt-20  mb-4">
 
             <Menu/>
 
