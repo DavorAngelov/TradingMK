@@ -157,9 +157,24 @@ const Portfolio = () => {
             </div>
 
             {/* stocks grid */}
-            <div className="bg-white/80 backdrop-blur-sm border border-gray-200 rounded-lg shadow-sm">
+            <div className="bg-white/80 backdrop-blur-sm border border-gray-200 rounded-lg shadow-sm  ">
                 <div className="flex flex-col space-y-1.5 p-6">
                     <h3 className="text-xl font-semibold text-gray-800">Stocks Breakdown</h3>
+                </div>
+                <div className="flex space-x-4 mb-6 mt-4 ml-6">
+                    {[ '1w', '1m'].map((timeframe) => (
+                        <button
+                            key={timeframe}
+                            onClick={() => setSelectedTimeframe(timeframe)}
+                            className={`px-3 py-1 rounded ${
+                                selectedTimeframe === timeframe
+                                    ? 'bg-gray-900 text-white'
+                                    : 'text-gray-500 hover:text-gray-700'
+                            }`}
+                        >
+                            {timeframe}
+                        </button>
+                    ))}
                 </div>
                 <div className="p-6 pt-0 grid grid-cols-1 md:grid-cols-2 gap-6">
                     {[1, 2, 3].map((_, idx) => (
@@ -167,7 +182,9 @@ const Portfolio = () => {
                             key={idx}
                             className="p-4 bg-gray-50 rounded-lg border border-gray-200"
                         >
+
                             <div className="flex justify-between items-center mb-2">
+
                                 <div>
                                     <div className="font-semibold text-gray-900">Stock {idx + 1}</div>
                                     <div className="text-xs text-gray-500">{idx + 1}</div>
@@ -176,6 +193,7 @@ const Portfolio = () => {
                   +4.5%
                 </span>
                             </div>
+
                             <div className="h-24 bg-white rounded flex items-center justify-center border-2 border-dashed border-gray-200">
                                 <span className="text-gray-400">Stock Chart</span>
                             </div>
