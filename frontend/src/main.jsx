@@ -11,6 +11,7 @@ import LandingPage from "./pages/LandingPage/LandingPage.jsx";
 import DetailedStockView from "./pages/DetailedStockView/DetailedStockView.jsx";
 import SignupPage from "./pages/Signup-Login/SignupPage.jsx";
 import LoginPage from "./pages/Signup-Login/LoginPage.jsx";
+import Portfolio from "./pages/Portfolio/Portfolio.jsx";
 
 createRoot(document.getElementById('root')).render(
 
@@ -21,6 +22,7 @@ createRoot(document.getElementById('root')).render(
                 <Route path="/detailed/:symbol" element={<DetailedStockView/>}></Route>
                 <Route path="/signup" element={<SignupPage />} />
                 <Route path="/login" element={<LoginPage />} />
+                <Route path="/portfolio" element={<Portfolio />} />
             </Routes>
         </BrowserRouter>
 
