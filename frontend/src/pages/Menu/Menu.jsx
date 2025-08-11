@@ -77,7 +77,7 @@ const Menu = () => {
                             </NavLink>
                             <button
                                 className="w-full cursor-pointer text-left px-4 py-2 hover:bg-gray-100 text-sm rounded-xl text-red-500 flex gap-2"
-                                onClick={() => { localStorage.removeItem('username'); navigate("/")}}
+                                onClick={() => {  localStorage.removeItem('accessToken'); console.log("removed"); navigate("/")}}
                             >
                                 <LogOut />
                                 Logout
