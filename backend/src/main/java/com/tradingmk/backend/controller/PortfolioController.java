@@ -1,20 +1,19 @@
 package com.tradingmk.backend.controller;
 
 
-import com.tradingmk.backend.dto.PortfolioDTO;
-import com.tradingmk.backend.dto.PortfolioHoldingDTO;
-import com.tradingmk.backend.dto.PortfolioResponse;
+import com.tradingmk.backend.dto.*;
 import com.tradingmk.backend.model.PortfolioHolding;
 import com.tradingmk.backend.repository.PortfolioHoldingRepository;
 import com.tradingmk.backend.repository.PortfolioRepository;
 import com.tradingmk.backend.repository.UserRepository;
+import com.tradingmk.backend.service.PortfolioService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -25,11 +24,13 @@ public class PortfolioController {
     private final PortfolioRepository portfolioRepository;
     private final UserRepository userRepository;
     private final PortfolioHoldingRepository portfolioHoldingRepository;
+    private final PortfolioService portfolioService;
 
-    public PortfolioController(PortfolioRepository portfolioRepository, UserRepository userRepository, PortfolioHoldingRepository portfolioHoldingRepository) {
+    public PortfolioController(PortfolioRepository portfolioRepository, UserRepository userRepository, PortfolioHoldingRepository portfolioHoldingRepository, PortfolioService portfolioService) {
         this.portfolioRepository = portfolioRepository;
         this.userRepository = userRepository;
         this.portfolioHoldingRepository = portfolioHoldingRepository;
+        this.portfolioService = portfolioService;
     }
 
     @GetMapping
@@ -54,4 +55,48 @@ public class PortfolioController {
 
         return ResponseEntity.ok(portfolio);
     }
+
+    @PostMapping("/buy")
+    public ResponseEntity<String> buyStock(@RequestBody BuyStockRequest request, Principal principal) {
+        System.out.println("Principal: " + principal);
+        //geting user
+        var user = userRepository.findByUsername(principal.getName())
+                .orElseThrow(() -> new RuntimeException("user not found"));
+
+        //portfolio gett
+        var portfolio = portfolioRepository.findByUserId(user.getId())
+                .orElseThrow(() -> new RuntimeException("portfolio not found"));
+
+        portfolioService.buyStock(
+                portfolio.getId(),
+                request.getStockSymbol(),
+                request.getQuantity(),
+                request.getPricePerUnit()
+        );
+
+        return ResponseEntity.ok("stock purchased successfuly");
+    }
+
+
+    @PostMapping("/sell")
+    public ResponseEntity<String> sellStock(@RequestBody SellStockRequest request, Principal principal) {
+        //geting user
+        var user = userRepository.findByUsername(principal.getName())
+                .orElseThrow(() -> new RuntimeException("user not found"));
+
+
+        //portfolio gett
+        var portfolio = portfolioRepository.findByUserId(user.getId())
+                .orElseThrow(() -> new RuntimeException("portfolio not found"));
+
+        portfolioService.sellStock(
+                portfolio.getId(),
+                request.getStockSymbol(),
+                request.getQuantity(),
+                request.getPricePerUnit()
+        );
+
+        return ResponseEntity.ok("stock sold successfuly");
+    }
+
 }

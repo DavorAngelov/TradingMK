@@ -20,17 +20,20 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
+                .cors()
+                .and()
                 .csrf()
                 .disable()
                 .authorizeHttpRequests()
                 .requestMatchers(
                                 "/api/auth/**",
-                                "/api/stocks/update",  // morame allow za da postiras, smeni go~!
+                                "/api/stocks/update",  // morame allow za da postiras
                                 "/api/stocks/**",
                                 "/ws/**",
                                 "/topic/**",
-                                "api/history/upload",
-                                "/api/history/{symbol}")
+                                "/api/history/upload",
+                                "/api/history/{symbol}",
+                                "/api/portfolio/**")
                 .permitAll()
                 .anyRequest()
                 .authenticated()

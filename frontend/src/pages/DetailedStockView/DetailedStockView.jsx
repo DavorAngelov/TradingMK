@@ -11,6 +11,26 @@ const DetailedStockView = () => {
     const [currentPrice, setCurrentPrice] = useState(null);
     const [percentage, setPercentage] = useState(null);
 
+    const [buyQuantity, setBuyQuantity] = useState(0);
+    const [buyTotal, setBuyTotal] = useState(0);
+    const [availableBalance, setAvailableBalance] = useState(0);
+
+    const [portfolio, setPortfolio] = useState(null);
+
+
+    useEffect(() => {
+        fetch('http://localhost:8080/api/portfolio', {
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
+            }
+        })
+            .then(res => res.json())
+            .then(data => setPortfolio(data))
+            .catch(err => console.error(err));
+    }, []);
+
+    const portfolioId = portfolio?.id;
+
     useEffect(() => {
         if (!symbol || !selectedTimeframe) return;
 
@@ -60,6 +80,66 @@ const DetailedStockView = () => {
             setPercentage(formattedPercentageChange)
         }
     }, [chartData]);
+
+    const handleBuy = async () => {
+        if (!buyQuantity || buyQuantity <= 0) {
+            alert("Enter a valid quantity");
+            return;
+        }
+
+        const token = localStorage.getItem("accessToken");
+        if (!token) {
+            alert("you must be logged in to buy stocks");
+            return;
+        }
+
+
+
+
+
+        try {
+            const response = await fetch("http://localhost:8080/api/portfolio/buy", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
+                },
+                body: JSON.stringify({
+                    portfolioId: portfolioId,
+                    stockSymbol: symbol,
+                    quantity: parseInt(buyQuantity),
+                    pricePerUnit: currentPrice
+                })
+            });
+
+            if (!response.ok) {
+                const text = await response.text();
+                console.error("Error:", text);
+                alert("Failed to buy stock: " + text);
+                return;
+            }
+
+            alert("Stock purchased successfully!");
+            setBuyQuantity("");
+        } catch (err) {
+            console.error("Fetch error:", err);
+            alert("Network error");
+        }
+    };
+
+
+
+
+    useEffect(() => {
+        const token = localStorage.getItem("accessToken");
+
+        fetch("http://localhost:8080/api/portfolio", {
+            headers: { Authorization: `Bearer ${token}` }
+        })
+            .then(res => res.json())
+            .then(data => setAvailableBalance(data.balance))
+            .catch(err => console.error("Error fetching balance", err));
+    }, []);
 
     return (
         <div className="min-h-screen bg-white text-gray-900  mb-4">
@@ -148,14 +228,21 @@ const DetailedStockView = () => {
                                 <div className="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center">
                                     <span className="text-white font-bold text-xs">Ξ</span>
                                 </div>
-                                <span className="font-medium">ALK</span>
+                                <span className="font-medium">{symbol}</span>
                             </div>
                             <span className="text-sm text-gray-500">You Buy</span>
+
                         </div>
                         <input
-                            type="text"
+                            type="number"
+                            min="0"
                             className="text-2xl font-bold mb-1"
-                            value="0"
+                            value={buyQuantity}
+                            onChange={(e) => {
+                                const qty = Number(e.target.value);
+                                setBuyQuantity(qty);
+                                setBuyTotal(qty * (currentPrice || 0));
+                            }}
                         />
 
                     </div>
@@ -171,13 +258,15 @@ const DetailedStockView = () => {
                             </div>
                             <span className="text-sm text-gray-500">You Spend</span>
                         </div>
-                        <div className="text-2xl font-bold mb-1">0</div>
+                        <div className="text-2xl font-bold mb-1">{buyTotal.toFixed(2)}</div>
 
                     </div>
 
 
                     <button
-                        className="w-full bg-gradient-to-r from-green-400 to-blue-500 text-white py-3 rounded-lg font-medium mb-4">
+                        onClick={handleBuy}
+                        className="w-full bg-gradient-to-r from-green-400 to-blue-500 text-white py-3 rounded-lg font-medium mb-4"
+                    >
                         Buy
                     </button>
 
@@ -185,7 +274,7 @@ const DetailedStockView = () => {
                     <div className="bg-gray-50 rounded-lg p-4">
                         <div className="text-sm text-gray-500 mb-2">Available Balance</div>
                         <div className="flex items-baseline space-x-2 mb-4">
-                            <span className="text-xl font-bold">0.00 MKD</span>
+                            <span className="text-xl font-bold">{availableBalance.toFixed(2)} MKD</span>
 
                         </div>
                         <div className="grid grid-cols-3 gap-4 text-sm">
