@@ -1,5 +1,6 @@
 package com.tradingmk.backend.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -32,7 +33,8 @@ public class User implements UserDetails {
     private String email;
 
 
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    @JsonManagedReference // the forward part of the relationship to serialize
     private Portfolio portfolio;
 
     public Portfolio getPortfolio() {

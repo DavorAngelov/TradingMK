@@ -1,6 +1,7 @@
 package com.tradingmk.backend.model;
 
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 
 import java.math.BigDecimal;
@@ -15,6 +16,7 @@ public class Portfolio {
 
     @OneToOne
     @JoinColumn(name = "user_id", nullable = false, unique = true)
+    @JsonBackReference // the back part, which will be ignored during serialization to avoid recursion
     private User user;
 
     @Column(nullable = false, precision = 18, scale = 2)

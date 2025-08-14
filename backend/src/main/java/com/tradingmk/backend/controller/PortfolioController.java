@@ -53,7 +53,7 @@ public class PortfolioController {
 
         PortfolioDTO portfolioDTO = new PortfolioDTO(portfolio.getBalance(), holdings);
 
-        return ResponseEntity.ok(portfolio);
+        return ResponseEntity.ok(portfolioDTO);
     }
 
     @PostMapping("/buy")
