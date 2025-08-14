@@ -32,8 +32,7 @@ public class SecurityConfig {
                                 "/ws/**",
                                 "/topic/**",
                                 "/api/history/upload",
-                                "/api/history/{symbol}",
-                                "/api/portfolio/**")
+                                "/api/history/{symbol}","/api/portfolio/**")
                 .permitAll()
                 .anyRequest()
                 .authenticated()

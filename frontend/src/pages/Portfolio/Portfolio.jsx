@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from "react";
-import { TrendingUp, Wallet, PlusCircle } from "lucide-react";
+import {TrendingUp, Wallet, PlusCircle} from "lucide-react";
 import Menu from "../Menu/Menu.jsx";
 import {useParams} from "react-router-dom";
 
@@ -10,7 +10,7 @@ const Portfolio = () => {
     const [currentPrice, setCurrentPrice] = useState(null);
     const [currentPrices, setCurrentPrices] = useState({});
     const [percentage, setPercentage] = useState(null);
-    const [portfolio, setPortfolio] = useState({ balance: 0, holdings: [] });
+    const [portfolio, setPortfolio] = useState({balance: 0, holdings: []});
 
     useEffect(() => {
         if (!symbol || !selectedTimeframe) return;
@@ -43,7 +43,7 @@ const Portfolio = () => {
                 setCurrentPrice(stock ? stock.currentPrice : null);
             })
             .catch(err => console.error("Error fetching current price:", err));
-    }, [symbol,selectedTimeframe]);
+    }, [symbol, selectedTimeframe]);
 
 
     const calculatePercentageChange = (data) => {
@@ -63,7 +63,11 @@ const Portfolio = () => {
     }, [chartData]);
 
     useEffect(() => {
-        fetch("http://localhost:8080/api/portfolio", { credentials: "include" })
+        fetch("http://localhost:8080/api/portfolio", {
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
+            }
+        })
             .then(res => res.json())
             .then(data => {
                 setPortfolio(data);
@@ -132,14 +136,14 @@ const Portfolio = () => {
             <Menu/>
 
 
-
             <div className="flex items-center justify-between">
-            <h3 className="text-4xl  text-gray-300 font-bold mb-8">My Portfolio</h3>
+                <h3 className="text-4xl  text-gray-300 font-bold mb-8">My Portfolio</h3>
 
-            <button className="flex items-center gap-2 bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg">
-                <PlusCircle className="w-5 h-5" />
-                Add Funds
-            </button>
+                <button
+                    className="flex items-center gap-2 bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg">
+                    <PlusCircle className="w-5 h-5"/>
+                    Add Funds
+                </button>
             </div>
 
             {/* wallet*/}
@@ -152,8 +156,9 @@ const Portfolio = () => {
                     <div className="flex flex-col">
                         <div className="text-sm text-gray-600">Wallet Balance</div>
                         <div className="flex items-baseline gap-3">
-                            <span className="text-3xl font-bold text-gray-900">{portfolio.balance.toLocaleString()} MKD</span>
-                            <Wallet className="w-5 h-5 text-gray-500" />
+                            <span
+                                className="text-3xl font-bold text-gray-900">{portfolio.balance.toLocaleString()} MKD</span>
+                            <Wallet className="w-5 h-5 text-gray-500"/>
                         </div>
                     </div>
 
@@ -161,8 +166,9 @@ const Portfolio = () => {
                     <div className="flex flex-col">
                         <div className="text-sm text-gray-600">Invested in Stocks</div>
                         <div className="flex items-baseline gap-3">
-                            <span className="text-3xl font-bold text-gray-900">{investedInStocks.toLocaleString(undefined, {maximumFractionDigits: 2})} MKD</span>
-                            <TrendingUp className="w-5 h-5 text-green-500" />
+                            <span
+                                className="text-3xl font-bold text-gray-900">{investedInStocks.toLocaleString(undefined, {maximumFractionDigits: 2})} MKD</span>
+                            <TrendingUp className="w-5 h-5 text-green-500"/>
                         </div>
                     </div>
                 </div>
@@ -198,7 +204,7 @@ const Portfolio = () => {
                     <h3 className="text-xl font-semibold text-gray-800">Stocks Breakdown</h3>
                 </div>
                 <div className="flex space-x-4 mb-6 mt-4 ml-6">
-                    {[ '1w', '1m'].map((timeframe) => (
+                    {['1w', '1m'].map((timeframe) => (
                         <button
                             key={timeframe}
                             onClick={() => setSelectedTimeframe(timeframe)}
@@ -241,7 +247,8 @@ const Portfolio = () => {
           </span>
                                 </div>
 
-                                <div className="h-24 bg-white rounded flex items-center justify-center border-2 border-dashed border-gray-200">
+                                <div
+                                    className="h-24 bg-white rounded flex items-center justify-center border-2 border-dashed border-gray-200">
                                     <span className="text-gray-400">Stock Chart</span>
                                 </div>
                             </div>
@@ -249,7 +256,6 @@ const Portfolio = () => {
                     })}
                 </div>
             </div>
-
 
 
         </div>

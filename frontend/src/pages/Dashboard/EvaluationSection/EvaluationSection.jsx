@@ -8,27 +8,36 @@ const EvaluationSection = () => {
 
 
     useEffect(() => {
-        fetch("http://localhost:8080/api/portfolio", {credentials: "include"})
-            .then(res => res.json())
-            .then(data => {
-                setPortfolio(data);
+        fetch("http://localhost:8080/api/portfolio", {
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
+            }
+        })
+            .then(async res => {
+                const text = await res.text();  // raw
+                console.log("Raw portfolio response:", text);
 
+                try {
+                    const data = JSON.parse(text);
+                    setPortfolio(data);
 
-                const symbols = data.holdings.map(h => h.stockSymbol);
-                if (symbols.length === 0) return;
+                    const symbols = data.holdings.map(h => h.stockSymbol);
+                    if (symbols.length === 0) return;
 
-                fetch("http://localhost:8080/api/stocks")
-                    .then(res => res.json())
-                    .then(allStocks => {
-
-                        const priceMap = {};
-                        symbols.forEach(symbol => {
-                            const stock = allStocks.find(s => s.symbol === symbol);
-                            priceMap[symbol] = stock ? stock.currentPrice : null;
-                        });
-                        setCurrentPrices(priceMap);
-                    })
-                    .catch(err => console.error("dsad", err));
+                    fetch("http://localhost:8080/api/stocks")
+                        .then(res => res.json())
+                        .then(allStocks => {
+                            const priceMap = {};
+                            symbols.forEach(symbol => {
+                                const stock = allStocks.find(s => s.symbol === symbol);
+                                priceMap[symbol] = stock ? stock.currentPrice : null;
+                            });
+                            setCurrentPrices(priceMap);
+                        })
+                        .catch(err => console.error("dsad", err));
+                } catch (err) {
+                    console.error("Invalid JSON from backend", err);
+                }
             })
             .catch(err => console.error("error", err));
     }, []);

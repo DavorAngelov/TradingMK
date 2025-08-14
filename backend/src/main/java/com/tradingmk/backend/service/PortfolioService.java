@@ -38,9 +38,10 @@ public class PortfolioService {
         //multiply for how much stocks are bught
         BigDecimal totalCost = pricePerUnit.multiply(BigDecimal.valueOf(quantity));
 
-        if (portfolio.getBalance().compareTo(totalCost) < 0) {
-            throw new RuntimeException("not enough balance to buy stock");
-        }
+//        if (portfolio.getBalance().compareTo(totalCost) < 0) {
+//            throw new RuntimeException("not enough balance to buy stock");
+//        }
+        //TODO - > BRING BACK , JUST FOR TESTING !!
 
         portfolio.setBalance(portfolio.getBalance().subtract(totalCost));
 
