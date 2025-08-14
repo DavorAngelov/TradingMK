@@ -102,7 +102,7 @@ const EvaluationSection = () => {
                             <div className="flex items-baseline gap-3">
                                 <span
                                     className="text-3xl font-bold text-gray-900">{investedInStocks.toLocaleString(undefined, {maximumFractionDigits: 2})} MKD</span>
-                                <TrendingUp className="w-5 h-5 text-green-500"/>
+
                             </div>
                         </div>
                     </div>

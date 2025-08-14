@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from "react";
-import {TrendingUp, Wallet, PlusCircle} from "lucide-react";
+import {TrendingUp, Wallet, PlusCircle,TrendingDown} from "lucide-react";
 import Menu from "../Menu/Menu.jsx";
 import {useParams} from "react-router-dom";
 
@@ -102,11 +102,16 @@ const Portfolio = () => {
         return sum + holding.quantity * Number(holding.avgPrice);
     }, 0);
 
+
+
     //FOR PERFORAMNFCE
     const currentValue = portfolio.holdings.reduce((sum, h) => {
         const currentPrice = currentPrices[h.stockSymbol] || 0;
         return sum + h.quantity * currentPrice;
     }, 0);
+
+    const totalPortfolioValue = portfolio.balance + currentValue;
+
 
     const totalProfit = currentValue - investedInStocks;
     const totalProfitPercent = investedInStocks === 0 ? 0 : (totalProfit / investedInStocks) * 100;
@@ -168,16 +173,32 @@ const Portfolio = () => {
                         <div className="flex items-baseline gap-3">
                             <span
                                 className="text-3xl font-bold text-gray-900">{investedInStocks.toLocaleString(undefined, {maximumFractionDigits: 2})} MKD</span>
-                            <TrendingUp className="w-5 h-5 text-green-500"/>
                         </div>
                     </div>
+
+                    <div className="flex flex-col">
+                        <div className="text-sm text-gray-600">Current portfolio value:</div>
+                        <div className="flex items-baseline gap-3">
+        <span
+            className="text-3xl font-bold text-gray-900">
+            {currentValue.toLocaleString(undefined, {maximumFractionDigits: 2})} MKD
+        </span>
+                            {totalProfit >= 0 ? (
+                                <TrendingUp className="w-5 h-5 text-green-500" />
+                            ) : (
+                                <TrendingDown className="w-5 h-5 text-red-500" />
+                            )}
+                        </div>
+                    </div>
+
+
                 </div>
             </div>
 
             {/* performnce */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-6 pt-6 justify-center">
                 <div>
-                    <div className="text-sm text-gray-600">Total Profit</div>
+                    <div className="text-sm text-gray-600">Total Profit / Loss</div>
                     <div className={`font-semibold ${totalProfit >= 0 ? "text-green-600" : "text-red-600"}`}>
                         {totalProfit >= 0 ? "+" : "-"}{Math.abs(totalProfit).toFixed(2)} MKD
                     </div>
@@ -204,19 +225,7 @@ const Portfolio = () => {
                     <h3 className="text-xl font-semibold text-gray-800">Stocks Breakdown</h3>
                 </div>
                 <div className="flex space-x-4 mb-6 mt-4 ml-6">
-                    {['1w', '1m'].map((timeframe) => (
-                        <button
-                            key={timeframe}
-                            onClick={() => setSelectedTimeframe(timeframe)}
-                            className={`px-3 py-1 rounded ${
-                                selectedTimeframe === timeframe
-                                    ? 'bg-gray-900 text-white'
-                                    : 'text-gray-500 hover:text-gray-700'
-                            }`}
-                        >
-                            {timeframe}
-                        </button>
-                    ))}
+
                 </div>
                 <div className="p-6 pt-0 grid grid-cols-1 md:grid-cols-2 gap-6">
                     {portfolio.holdings.map((holding) => {

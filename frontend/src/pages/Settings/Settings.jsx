@@ -1,17 +1,25 @@
 import React from "react";
 import {LogOut, User, Mail } from "lucide-react";
 import Menu from "../Menu/Menu.jsx";
+import {jwtDecode} from "jwt-decode";
+import {useNavigate} from "react-router-dom";
 
 const Settings = () => {
-    const user = {
-        username: "davor1",
-        email: "davor@gmail.com",
-    };
+    const navigate = useNavigate();
 
-    const handleLogout = () => {
-        //need to remove token from localStorage, fix it !!!
-        window.location.href = "/";
-    };
+
+
+
+    const token = localStorage.getItem('accessToken');
+    let username = '';
+    let email = '';
+
+    if (token) {
+        const decoded = jwtDecode(token);
+        username = decoded.sub;
+        email = decoded.email;//username
+
+    }
 
     return (
         <div className=" max-w-7xl mx-auto space-y-8 pt-20 mb-4">
@@ -23,7 +31,7 @@ const Settings = () => {
                     <User className="w-5 h-5 text-gray-500" />
                     <div>
                         <div className="text-sm text-gray-600">Username</div>
-                        <div className="font-semibold text-gray-900">{user.username}</div>
+                        <div className="font-semibold text-gray-900">{username}</div>
                     </div>
                 </div>
 
@@ -32,7 +40,7 @@ const Settings = () => {
                     <Mail className="w-5 h-5 text-gray-500" />
                     <div>
                         <div className="text-sm text-gray-600">Email</div>
-                        <div className="font-semibold text-gray-900">{user.email}</div>
+                        <div className="font-semibold text-gray-900">{email}</div>
                     </div>
                 </div>
 
@@ -45,10 +53,10 @@ const Settings = () => {
                     <div className="text-sm text-gray-600">Sign out of your account</div>
                 </div>
                 <button
-                    onClick={handleLogout}
+                    onClick={() => {localStorage.removeItem('accessToken'); console.log("removed"); navigate("/")}}
                     className="flex items-center gap-2 bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg cursor-pointer"
                 >
-                    <LogOut className="w-5 h-5" />
+                    <LogOut className="w-5 h-5"  />
                     Logout
                 </button>
             </div>

@@ -16,6 +16,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.HashMap;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -49,9 +51,10 @@ public class AuthenticationService {
         portfolio.setBalance(BigDecimal.ZERO);
         portfolioRepository.save(portfolio);
 
-
+        Map<String, Object> extraClaims = new HashMap<>();
+        extraClaims.put("email", user.getEmail());
         //final generate token
-        var jwtToken = userService.generateToken(user);
+        var jwtToken = userService.generateToken(extraClaims,user);
         return AuthenticationResponse.builder()
                 .token(jwtToken)
                 .build();
@@ -73,8 +76,10 @@ public class AuthenticationService {
         var user = repository.findByUsername(request.getUsername())
                 .orElseThrow();
 
-        var jwtToken = userService.generateToken(user);
-        System.out.println("Generated JWT: " + jwtToken);
+        Map<String, Object> extraClaims = new HashMap<>();
+        extraClaims.put("email", user.getEmail());
+        //final generate token
+        var jwtToken = userService.generateToken(extraClaims,user);
         return AuthenticationResponse.builder()
                 .token(jwtToken)
                 .build();
