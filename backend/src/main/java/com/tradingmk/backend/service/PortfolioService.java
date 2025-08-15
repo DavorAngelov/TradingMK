@@ -2,13 +2,18 @@ package com.tradingmk.backend.service;
 
 import com.tradingmk.backend.model.Portfolio;
 import com.tradingmk.backend.model.PortfolioHolding;
+import com.tradingmk.backend.model.Stock;
+import com.tradingmk.backend.model.Transaction;
 import com.tradingmk.backend.repository.PortfolioHoldingRepository;
 import com.tradingmk.backend.repository.PortfolioRepository;
+import com.tradingmk.backend.repository.StockRepository;
+import com.tradingmk.backend.repository.TransactionRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -17,6 +22,10 @@ public class PortfolioService {
 
     private final PortfolioRepository portfolioRepository;
     private final PortfolioHoldingRepository holdingRepository;
+
+
+    private final TransactionRepository transactionRepository;
+    private final StockRepository stockRepository;
 
     public Portfolio getPortfolioByUserId(Long userId) {
         return portfolioRepository.findByUserId(userId)
@@ -66,6 +75,25 @@ public class PortfolioService {
 
         holdingRepository.save(holding);
         portfolioRepository.save(portfolio);
+
+
+        //sava a transaction
+        Transaction transaction = new Transaction();
+        transaction.setUser(portfolio.getUser());
+
+        Stock stock = stockRepository.findBySymbol(stockSymbol)
+                .orElseThrow(() -> new RuntimeException("stock not found: " + stockSymbol));
+        transaction.setStock(stock);
+/*        transaction.setStock(stockRepository.findBySymbol(stockSymbol)
+                .orElseThrow(() -> new RuntimeException("Stock not found")));*/
+        transaction.setType("BUY");
+        transaction.setQuantity(quantity);
+        transaction.setPrice(pricePerUnit.doubleValue());
+        transaction.setTimestamp(LocalDateTime.now());
+
+        transactionRepository.save(transaction);
+
+
     }
 
     //sell

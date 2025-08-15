@@ -255,11 +255,6 @@ const Portfolio = () => {
                                         {profitLossPercent.toFixed(2)}%
           </span>
                                 </div>
-
-                                <div
-                                    className="h-24 bg-white rounded flex items-center justify-center border-2 border-dashed border-gray-200">
-                                    <span className="text-gray-400">Stock Chart</span>
-                                </div>
                             </div>
                         );
                     })}
