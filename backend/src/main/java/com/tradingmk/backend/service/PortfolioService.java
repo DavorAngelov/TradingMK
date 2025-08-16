@@ -106,20 +106,49 @@ public class PortfolioService {
                 .findByPortfolioIdAndStockSymbol(portfolioId, stockSymbol)
                 .orElseThrow(() -> new RuntimeException("stock not found in portfolio"));
 
+        // checks
         if (holding.getQuantity() < quantity) {
             throw new RuntimeException("not enough shares to sell");
         }
 
+        if (pricePerUnit == null) {
+            // fallback: get latest price from stock history or live API
+            Stock stock = stockRepository.findBySymbol(stockSymbol)
+                    .orElseThrow(() -> new RuntimeException("stock not found: " + stockSymbol));
+            pricePerUnit = BigDecimal.valueOf(stock.getCurrentPrice());
+        }
+
+        // gain from the sale made
         BigDecimal totalGain = pricePerUnit.multiply(BigDecimal.valueOf(quantity));
+
+
         holding.setQuantity(holding.getQuantity() - quantity);
 
+        // if holding is zero ==== remove it from database
         if (holding.getQuantity() == 0) {
             holdingRepository.delete(holding);
         } else {
             holdingRepository.save(holding);
         }
 
+        // update
         portfolio.setBalance(portfolio.getBalance().add(totalGain));
         portfolioRepository.save(portfolio);
+
+
+        Stock stock = stockRepository.findBySymbol(stockSymbol)
+                .orElseThrow(() -> new RuntimeException("stock not found: " + stockSymbol));
+
+        Transaction transaction = new Transaction();
+        transaction.setUser(portfolio.getUser());
+        transaction.setStock(stock);
+        transaction.setType("SELL");
+        transaction.setQuantity(quantity);
+        transaction.setPrice(pricePerUnit.doubleValue());
+        transaction.setTimestamp(LocalDateTime.now());
+
+        transactionRepository.save(transaction);
+
+        System.out.println("saved sell");
     }
 }

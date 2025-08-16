@@ -12,6 +12,11 @@ const Portfolio = () => {
     const [percentage, setPercentage] = useState(null);
     const [portfolio, setPortfolio] = useState({balance: 0, holdings: []});
 
+
+    const portfolioId = portfolio?.id;
+
+
+
     useEffect(() => {
         if (!symbol || !selectedTimeframe) return;
 
@@ -135,6 +140,51 @@ const Portfolio = () => {
         }
     });
 
+
+    const handleSell = async (symbol, maxQuantity) => {
+        const quantity = parseInt(prompt(`Enter quantity to sell (max ${maxQuantity}):`), 10);
+
+        if (!quantity || quantity <= 0 || quantity > maxQuantity) {
+            alert("Enter a valid quantity");
+            return;
+        }
+
+        const token = localStorage.getItem("accessToken");
+        if (!token) {
+            alert("You must be logged in to sell stocks");
+            return;
+        }
+
+        try {
+            const response = await fetch("http://localhost:8080/api/portfolio/sell", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
+                },
+                body: JSON.stringify({
+                    portfolioId: portfolioId,
+                    stockSymbol: symbol,
+                    quantity: quantity,
+                    pricePerUnit: currentPrice
+                })
+            });
+
+            if (!response.ok) {
+                const text = await response.text();
+                console.error("Error:", text);
+                alert("Failed to sell stock: " + text);
+                return;
+            }
+
+
+            alert(`Sold ${quantity} shares of ${symbol}`);
+        } catch (err) {
+            console.error("Fetch error:", err);
+            alert("Network error");
+        }
+    };
+
     return (
         <div className=" max-w-7xl mx-auto space-y-8 pt-20  mb-4">
 
@@ -237,7 +287,14 @@ const Portfolio = () => {
                                 key={holding.stockSymbol}
                                 className="p-4 bg-gray-50 rounded-lg border border-gray-200"
                             >
+
                                 <div className="flex justify-between items-center mb-2">
+                                    <button
+                                        onClick={() => handleSell(holding.stockSymbol, holding.quantity)}
+                                        className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-sm"
+                                    >
+                                        Sell
+                                    </button>
                                     <div>
                                         <div className="font-semibold text-gray-900">
                                             {holding.stockSymbol}

@@ -92,11 +92,6 @@ const DetailedStockView = () => {
             alert("you must be logged in to buy stocks");
             return;
         }
-
-
-
-
-
         try {
             const response = await fetch("http://localhost:8080/api/portfolio/buy", {
                 method: "POST",
