@@ -11,7 +11,10 @@ const Menu = () => {
     const token = localStorage.getItem('accessToken');
     let username = '';
 
-    if (token) {
+    const isDemo = localStorage.getItem("demo") === "true";
+    if (isDemo) {
+        username = "Demo User";
+    } else if (token) {
         const decoded = jwtDecode(token);
         username = decoded.sub; //username
     }
@@ -77,7 +80,10 @@ const Menu = () => {
                             </NavLink>
                             <button
                                 className="w-full cursor-pointer text-left px-4 py-2 hover:bg-gray-100 text-sm rounded-xl text-red-500 flex gap-2"
-                                onClick={() => {  localStorage.removeItem('accessToken'); console.log("removed"); navigate("/")}}
+                                onClick={() => {  localStorage.removeItem('accessToken');localStorage.removeItem('accessToken');
+                                    localStorage.removeItem('demo');
+                                    localStorage.removeItem('portfolio');
+                                     console.log("removed"); navigate("/")}}
                             >
                                 <LogOut />
                                 Logout

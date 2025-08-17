@@ -6,6 +6,20 @@ import {Link, useNavigate} from 'react-router-dom';
 const LandingPage = () => {
     const navigate = useNavigate();
 
+
+    const handleDemoAccount = () => {
+        localStorage.setItem("demo", "true");
+        localStorage.setItem("demoUsername", "DemoUser");
+
+        const demoPortfolio = {
+            balance: 100000,
+            holdings: []
+        };
+        localStorage.setItem("demoPortfolio", JSON.stringify(demoPortfolio));
+        window.location.href = "/dashboard";
+    };
+
+
     return (
         <div className="min-h-screen">
 
@@ -47,7 +61,7 @@ const LandingPage = () => {
                     </button>
 
                     <button
-                        className="flex items-center space-x-3  hover:text-gray-300 transition-colors"  >
+                        className="flex items-center space-x-3  hover:text-gray-300 transition-colors"  onClick={handleDemoAccount} >
                         <Play className="w-6 h-6"/>
                         <Link className="font-medium" to="/dashboard" >How it Works</Link>
                     </button>

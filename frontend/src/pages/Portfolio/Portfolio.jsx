@@ -68,6 +68,30 @@ const Portfolio = () => {
     }, [chartData]);
 
     useEffect(() => {
+        const isDemo = localStorage.getItem("demo") === "true";
+
+        if (isDemo) {
+            // Load directly from localStorage
+            const storedPortfolio = JSON.parse(localStorage.getItem("demoPortfolio"));
+            if (storedPortfolio) {
+                setPortfolio(storedPortfolio);
+
+                // fetch stock prices for holdings
+                const symbols = storedPortfolio.holdings.map(h => h.stockSymbol);
+                if (symbols.length > 0) {
+                    fetch("http://localhost:8080/api/stocks")
+                        .then(res => res.json())
+                        .then(allStocks => {
+                            const priceMap = {};
+                            symbols.forEach(symbol => {
+                                const stock = allStocks.find(s => s.symbol === symbol);
+                                priceMap[symbol] = stock ? stock.currentPrice : null;
+                            });
+                            setCurrentPrices(priceMap);
+                        });
+                }
+            }
+        } else{
         fetch("http://localhost:8080/api/portfolio", {
             headers: {
                 'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
@@ -95,7 +119,7 @@ const Portfolio = () => {
                     .catch(err => console.error("dsad", err));
             })
             .catch(err => console.error("error", err));
-    }, []);
+    }}, []);
 
     const getProfitLossPercent = (holding) => {
         const currentPrice = currentPrices[holding.stockSymbol];
@@ -146,6 +170,30 @@ const Portfolio = () => {
 
         if (!quantity || quantity <= 0 || quantity > maxQuantity) {
             alert("Enter a valid quantity");
+            return;
+        }
+
+        const isDemo = localStorage.getItem("demo") === "true";
+
+        if (isDemo) {
+
+            const updatedPortfolio = { ...portfolio };
+            const holding = updatedPortfolio.holdings.find(h => h.stockSymbol === symbol);
+
+            if (holding) {
+                holding.quantity -= quantity;
+                updatedPortfolio.balance += quantity * (currentPrices[symbol] || 0);
+
+
+                if (holding.quantity <= 0) {
+                    updatedPortfolio.holdings = updatedPortfolio.holdings.filter(h => h.stockSymbol !== symbol);
+                }
+            }
+
+            setPortfolio(updatedPortfolio);
+            localStorage.setItem("demoPortfolio", JSON.stringify(updatedPortfolio));
+
+            alert(`(Demo) Sold ${quantity} shares of ${symbol}`);
             return;
         }
 

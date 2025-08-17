@@ -19,14 +19,21 @@ const DetailedStockView = () => {
 
 
     useEffect(() => {
-        fetch('http://localhost:8080/api/portfolio', {
-            headers: {
-                'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
-            }
-        })
-            .then(res => res.json())
-            .then(data => setPortfolio(data))
-            .catch(err => console.error(err));
+        const isDemo = localStorage.getItem("demo") === "true";
+        if (isDemo) {
+            const storedPortfolio = JSON.parse(localStorage.getItem("demoPortfolio"));
+            setPortfolio(storedPortfolio);
+            setAvailableBalance(storedPortfolio?.balance || 0);
+        } else {
+            fetch('http://localhost:8080/api/portfolio', {
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
+                }
+            })
+                .then(res => res.json())
+                .then(data => setPortfolio(data))
+                .catch(err => console.error(err));
+        }
     }, []);
 
     const portfolioId = portfolio?.id;
@@ -62,7 +69,7 @@ const DetailedStockView = () => {
                 setCurrentPrice(stock ? stock.currentPrice : null);
             })
             .catch(err => console.error("Error fetching current price:", err));
-    }, [symbol,selectedTimeframe]);
+    }, [symbol, selectedTimeframe]);
 
 
     const calculatePercentageChange = (data) => {
@@ -82,59 +89,105 @@ const DetailedStockView = () => {
     }, [chartData]);
 
     const handleBuy = async () => {
+        const isDemo = localStorage.getItem("demo") === "true";
         if (!buyQuantity || buyQuantity <= 0) {
             alert("Enter a valid quantity");
             return;
         }
 
-        const token = localStorage.getItem("accessToken");
-        if (!token) {
-            alert("you must be logged in to buy stocks");
-            return;
-        }
-        try {
-            const response = await fetch("http://localhost:8080/api/portfolio/buy", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": `Bearer ${token}`
-                },
-                body: JSON.stringify({
-                    portfolioId: portfolioId,
-                    stockSymbol: symbol,
-                    quantity: parseInt(buyQuantity),
-                    pricePerUnit: currentPrice
-                })
-            });
+        if (isDemo) {
+            // loadd
+            const storedPortfolio = JSON.parse(localStorage.getItem("demoPortfolio")) || { balance: 100000, holdings: [] };
 
-            if (!response.ok) {
-                const text = await response.text();
-                console.error("Error:", text);
-                alert("Failed to buy stock: " + text);
+            const totalCost = buyQuantity * currentPrice;
+
+            if (storedPortfolio.balance < totalCost) {
+                alert("not enough balance for demo purchase");
                 return;
             }
 
-            alert("Stock purchased successfully!");
-            setBuyQuantity("");
-        } catch (err) {
-            console.error("Fetch error:", err);
-            alert("Network error");
+
+            storedPortfolio.balance -= totalCost;
+
+
+            const existingHolding = storedPortfolio.holdings.find(h => h.stockSymbol === symbol);
+            if (existingHolding) {
+                const newQuantity = existingHolding.quantity + buyQuantity;
+                existingHolding.avgPrice = ((existingHolding.avgPrice * existingHolding.quantity) + (currentPrice * buyQuantity)) / newQuantity;
+                existingHolding.quantity = newQuantity;
+            } else {
+                storedPortfolio.holdings.push({
+                    stockSymbol: symbol,
+                    quantity: buyQuantity,
+                    avgPrice: currentPrice
+                });
+            }
+            localStorage.setItem("demoPortfolio", JSON.stringify(storedPortfolio));
+            setPortfolio(storedPortfolio);
+            setAvailableBalance(storedPortfolio.balance);
+
+            alert("demo stock purchased successfully!");
+            setBuyQuantity(0);
+            setBuyTotal(0);
+        } else {
+
+            const token = localStorage.getItem("accessToken");
+            if (!token) {
+                alert("you must be logged in to buy stocks");
+                return;
+            }
+            try {
+                const response = await fetch("http://localhost:8080/api/portfolio/buy", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        portfolioId: portfolioId,
+                        stockSymbol: symbol,
+                        quantity: parseInt(buyQuantity),
+                        pricePerUnit: currentPrice
+                    })
+                });
+
+                if (!response.ok) {
+                    const text = await response.text();
+                    console.error("Error:", text);
+                    alert("Failed to buy stock: " + text);
+                    return;
+                }
+
+                alert("Stock purchased successfully!");
+                setBuyQuantity("");
+            } catch (err) {
+                console.error("Fetch error:", err);
+                alert("Network error");
+            }
         }
     };
 
 
-
-
     useEffect(() => {
         const token = localStorage.getItem("accessToken");
+        const isDemo = localStorage.getItem("demo") === "true";
+
+        if (isDemo) {
+            const storedPortfolio = JSON.parse(localStorage.getItem("demoPortfolio")) || {
+                balance: 100000,
+                holdings: []
+            };
+            setAvailableBalance(storedPortfolio.balance);
+            setPortfolio(storedPortfolio);
+        }else{
 
         fetch("http://localhost:8080/api/portfolio", {
-            headers: { Authorization: `Bearer ${token}` }
+            headers: {Authorization: `Bearer ${token}`}
         })
             .then(res => res.json())
             .then(data => setAvailableBalance(data.balance))
             .catch(err => console.error("Error fetching balance", err));
-    }, []);
+    }}, []);
 
     return (
         <div className="min-h-screen bg-white text-gray-900  mb-4">
@@ -170,7 +223,7 @@ const DetailedStockView = () => {
 
 
                     <div className="flex space-x-4 mb-6">
-                        {[ '1w', '1m'].map((timeframe) => (
+                        {['1w', '1m'].map((timeframe) => (
                             <button
                                 key={timeframe}
                                 onClick={() => setSelectedTimeframe(timeframe)}

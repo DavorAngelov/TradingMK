@@ -6,8 +6,18 @@ const EvaluationSection = () => {
     const [percentage, setPercentage] = useState(null);
     const [portfolio, setPortfolio] = useState({balance: 0, holdings: []});
 
-
     useEffect(() => {
+        const isDemo = localStorage.getItem("demo") === "true";
+        if (isDemo) {
+            const demoPortfolio = JSON.parse(localStorage.getItem("demoPortfolio") || '{}');
+            setPortfolio(demoPortfolio);
+
+
+            const priceMap = {};
+            demoPortfolio.holdings?.forEach(h => priceMap[h.stockSymbol] = h.avgPrice || 0);
+            setCurrentPrices(priceMap);
+
+        } else{
         fetch("http://localhost:8080/api/portfolio", {
             headers: {
                 'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
@@ -40,14 +50,9 @@ const EvaluationSection = () => {
                 }
             })
             .catch(err => console.error("error", err));
-    }, []);
+    }}, []);
 
-    const getProfitLossPercent = (holding) => {
-        const currentPrice = currentPrices[holding.stockSymbol];
-        if (!currentPrice || holding.avgPrice === 0) return 0;
 
-        return ((currentPrice - holding.avgPrice) / holding.avgPrice) * 100;
-    };
     const investedInStocks = portfolio.holdings.reduce((sum, holding) => {
         return sum + holding.quantity * Number(holding.avgPrice);
     }, 0);
