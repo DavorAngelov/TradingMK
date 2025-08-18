@@ -176,14 +176,12 @@ const Portfolio = () => {
         const isDemo = localStorage.getItem("demo") === "true";
 
         if (isDemo) {
-
             const updatedPortfolio = { ...portfolio };
             const holding = updatedPortfolio.holdings.find(h => h.stockSymbol === symbol);
 
             if (holding) {
                 holding.quantity -= quantity;
                 updatedPortfolio.balance += quantity * (currentPrices[symbol] || 0);
-
 
                 if (holding.quantity <= 0) {
                     updatedPortfolio.holdings = updatedPortfolio.holdings.filter(h => h.stockSymbol !== symbol);
@@ -204,7 +202,7 @@ const Portfolio = () => {
         }
 
         try {
-            const response = await fetch("http://localhost:8080/api/portfolio/sell", {
+            const response = await fetch("http://localhost:8080/api/trades/request", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -214,25 +212,24 @@ const Portfolio = () => {
                     portfolioId: portfolioId,
                     stockSymbol: symbol,
                     quantity: quantity,
-                    pricePerUnit: currentPrice
+                    pricePerUnit: currentPrices[symbol] || 0,
+                    type: "SELL"
                 })
             });
 
             if (!response.ok) {
                 const text = await response.text();
                 console.error("Error:", text);
-                alert("Failed to sell stock: " + text);
+                alert("Failed to request sell: " + text);
                 return;
             }
 
-
-            alert(`Sold ${quantity} shares of ${symbol}`);
+            alert(`Sell request sent for ${quantity} shares of ${symbol}. Waiting for approval.`);
         } catch (err) {
             console.error("Fetch error:", err);
             alert("Network error");
         }
     };
-
     return (
         <div className=" max-w-7xl mx-auto space-y-8 pt-20  mb-4">
 

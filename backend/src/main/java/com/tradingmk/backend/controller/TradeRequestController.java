@@ -104,8 +104,16 @@ public class TradeRequestController {
                 throw new RuntimeException("Not enough stock quantity to sell");
             }
 
+
             holding.setQuantity(holding.getQuantity() - tr.getQuantity());
-            portfolioHoldingRepository.save(holding);
+
+
+            if (holding.getQuantity() <= 0) {
+                portfolioHoldingRepository.delete(holding);
+            } else {
+                portfolioHoldingRepository.save(holding);
+            }
+
 
             BigDecimal totalGain = BigDecimal.valueOf(tr.getQuantity() * tr.getPricePerUnit());
             portfolio.setBalance(portfolio.getBalance().add(totalGain));
