@@ -139,7 +139,7 @@ const Portfolio = () => {
         return sum + h.quantity * currentPrice;
     }, 0);
 
-    const totalPortfolioValue = portfolio.balance + currentValue;
+    // const totalPortfolioValue = portfolio.balance + currentValue;
 
 
     const totalProfit = currentValue - investedInStocks;

@@ -13,9 +13,20 @@ const EvaluationSection = () => {
             setPortfolio(demoPortfolio);
 
 
-            const priceMap = {};
-            demoPortfolio.holdings?.forEach(h => priceMap[h.stockSymbol] = h.avgPrice || 0);
-            setCurrentPrices(priceMap);
+            // fetch stock prices for holdings
+            const symbols = demoPortfolio.holdings.map(h => h.stockSymbol);
+            if (symbols.length > 0) {
+                fetch("http://localhost:8080/api/stocks")
+                    .then(res => res.json())
+                    .then(allStocks => {
+                        const priceMap = {};
+                        symbols.forEach(symbol => {
+                            const stock = allStocks.find(s => s.symbol === symbol);
+                            priceMap[symbol] = stock ? stock.currentPrice : null;
+                        });
+                        setCurrentPrices(priceMap);
+                    });
+            }
 
         } else{
         fetch("http://localhost:8080/api/portfolio", {
