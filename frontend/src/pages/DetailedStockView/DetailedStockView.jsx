@@ -96,20 +96,13 @@ const DetailedStockView = () => {
         }
 
         if (isDemo) {
-            // loadd
             const storedPortfolio = JSON.parse(localStorage.getItem("demoPortfolio")) || { balance: 100000, holdings: [] };
-
             const totalCost = buyQuantity * currentPrice;
-
             if (storedPortfolio.balance < totalCost) {
-                alert("not enough balance for demo purchase");
+                alert("Not enough balance for demo purchase");
                 return;
             }
-
-
             storedPortfolio.balance -= totalCost;
-
-
             const existingHolding = storedPortfolio.holdings.find(h => h.stockSymbol === symbol);
             if (existingHolding) {
                 const newQuantity = existingHolding.quantity + buyQuantity;
@@ -125,43 +118,40 @@ const DetailedStockView = () => {
             localStorage.setItem("demoPortfolio", JSON.stringify(storedPortfolio));
             setPortfolio(storedPortfolio);
             setAvailableBalance(storedPortfolio.balance);
-
-            alert("demo stock purchased successfully!");
+            alert("Demo stock purchased successfully!");
             setBuyQuantity(0);
             setBuyTotal(0);
         } else {
-
             const token = localStorage.getItem("accessToken");
             if (!token) {
-                alert("you must be logged in to buy stocks");
+                alert("You must be logged in to buy stocks");
                 return;
             }
             try {
-                const response = await fetch("http://localhost:8080/api/portfolio/buy", {
+                const response = await fetch("http://localhost:8080/api/trades/request", {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
                         "Authorization": `Bearer ${token}`
                     },
                     body: JSON.stringify({
-                        portfolioId: portfolioId,
                         stockSymbol: symbol,
                         quantity: parseInt(buyQuantity),
-                        pricePerUnit: currentPrice
+                        pricePerUnit: currentPrice,
+                        type: "BUY"
                     })
                 });
 
                 if (!response.ok) {
                     const text = await response.text();
-                    console.error("Error:", text);
-                    alert("Failed to buy stock: " + text);
+                    alert("Failed to request trade: " + text);
                     return;
                 }
 
-                alert("Stock purchased successfully!");
+                alert("Trade request sent! Waiting for broker approval.");
                 setBuyQuantity("");
             } catch (err) {
-                console.error("Fetch error:", err);
+                console.error("Error sending trade request:", err);
                 alert("Network error");
             }
         }

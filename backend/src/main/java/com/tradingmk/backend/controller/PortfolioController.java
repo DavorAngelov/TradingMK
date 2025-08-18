@@ -2,13 +2,16 @@ package com.tradingmk.backend.controller;
 
 
 import com.tradingmk.backend.dto.*;
+import com.tradingmk.backend.model.Portfolio;
 import com.tradingmk.backend.model.PortfolioHolding;
 import com.tradingmk.backend.repository.PortfolioHoldingRepository;
 import com.tradingmk.backend.repository.PortfolioRepository;
 import com.tradingmk.backend.repository.UserRepository;
 import com.tradingmk.backend.service.PortfolioService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
@@ -25,6 +28,8 @@ public class PortfolioController {
     private final UserRepository userRepository;
     private final PortfolioHoldingRepository portfolioHoldingRepository;
     private final PortfolioService portfolioService;
+
+
 
     public PortfolioController(PortfolioRepository portfolioRepository, UserRepository userRepository, PortfolioHoldingRepository portfolioHoldingRepository, PortfolioService portfolioService) {
         this.portfolioRepository = portfolioRepository;
@@ -76,7 +81,6 @@ public class PortfolioController {
 
         return ResponseEntity.ok("stock purchased successfuly");
     }
-
 
     @PostMapping("/sell")
     public ResponseEntity<String> sellStock(@RequestBody SellStockRequest request, Principal principal) {

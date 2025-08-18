@@ -26,13 +26,13 @@ public class SecurityConfig {
                 .disable()
                 .authorizeHttpRequests()
                 .requestMatchers(
-                                "/api/auth/**",
-                                "/api/stocks/update",  // morame allow za da postiras
-                                "/api/stocks/**",
-                                "/ws/**",
-                                "/topic/**",
-                                "/api/history/upload",
-                                "/api/history/{symbol}","/api/portfolio/**")
+                        "/api/auth/**",
+                        "/api/stocks/update",  // morame allow za da postiras
+                        "/api/stocks/**",
+                        "/ws/**",
+                        "/topic/**",
+                        "/api/history/upload",
+                        "/api/history/{symbol}","/api/trades/**")
                 .permitAll()
                 .anyRequest()
                 .authenticated()
