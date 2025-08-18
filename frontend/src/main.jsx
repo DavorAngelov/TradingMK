@@ -14,6 +14,7 @@ import LoginPage from "./pages/Signup-Login/LoginPage.jsx";
 import Portfolio from "./pages/Portfolio/Portfolio.jsx";
 import Education from "./pages/Education/Education.jsx";
 import Settings from "./pages/Settings/Settings.jsx";
+import AdminTrades from "./pages/AdminTrades/AdminTrades.jsx";
 
 createRoot(document.getElementById('root')).render(
 
@@ -27,6 +28,7 @@ createRoot(document.getElementById('root')).render(
                 <Route path="/portfolio" element={<Portfolio />} />
                 <Route path="/education" element={<Education/>} />
                 <Route path="/settings" element={<Settings/>} />
+                <Route path="/admin" element={<AdminTrades/>} />
             </Routes>
         </BrowserRouter>
 

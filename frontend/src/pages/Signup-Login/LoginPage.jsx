@@ -30,6 +30,7 @@ const LoginPage = () => {
             const { jwtDecode } = await import('jwt-decode');
             const decoded = jwtDecode(token);
             localStorage.setItem('username', decoded.sub); // sub contains usernamere
+            localStorage.setItem('role', decoded.role || 'USER');
         } catch (err) {
             console.error('Failed to decode token:', err);
         }
@@ -45,7 +46,15 @@ const LoginPage = () => {
         try {
             const message = await login();
             setSuccess(message);
-            navigate('/dashboard');
+
+            // redirect based on role
+            const role = localStorage.getItem('role');
+            if (role === 'ADMIN') {
+                navigate('/admin');      // admins go to admin page
+            } else {
+                navigate('/dashboard');  // normal users go to dashboard
+            }
+
         } catch (err) {
             setError(err.message || 'Login failed');
         }
