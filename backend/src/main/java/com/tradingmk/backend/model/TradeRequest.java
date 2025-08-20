@@ -6,7 +6,6 @@ import jakarta.persistence.Entity;
 import java.time.LocalDateTime;
 
 @Entity
-
 public class TradeRequest {
 
     @Id

@@ -1,13 +1,8 @@
 package com.tradingmk.backend.controller;
 
 
-import com.tradingmk.backend.model.Portfolio;
-import com.tradingmk.backend.model.PortfolioHolding;
-import com.tradingmk.backend.model.TradeRequest;
-import com.tradingmk.backend.model.User;
-import com.tradingmk.backend.repository.PortfolioHoldingRepository;
-import com.tradingmk.backend.repository.PortfolioRepository;
-import com.tradingmk.backend.repository.TradeRequestRepository;
+import com.tradingmk.backend.model.*;
+import com.tradingmk.backend.repository.*;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,10 +19,15 @@ public class TradeRequestController {
     private final PortfolioRepository portfolioRepository;
     private final PortfolioHoldingRepository portfolioHoldingRepository;
 
-    public TradeRequestController(TradeRequestRepository tradeRequestRepository, PortfolioRepository portfolioRepository, PortfolioHoldingRepository portfolioHoldingRepository) {
+    private final TransactionRepository transactionRepository;
+    private final StockRepository stockRepository;
+
+    public TradeRequestController(TradeRequestRepository tradeRequestRepository, PortfolioRepository portfolioRepository, PortfolioHoldingRepository portfolioHoldingRepository, TransactionRepository transactionRepository, StockRepository stockRepository) {
         this.tradeRequestRepository = tradeRequestRepository;
         this.portfolioRepository = portfolioRepository;
         this.portfolioHoldingRepository = portfolioHoldingRepository;
+        this.transactionRepository = transactionRepository;
+        this.stockRepository = stockRepository;
     }
 
     // sending the trade request
@@ -95,6 +95,20 @@ public class TradeRequestController {
 
             portfolioHoldingRepository.save(holding);
 
+            //sava a transaction
+            Transaction transaction = new Transaction();
+            transaction.setUser(portfolio.getUser());
+
+            Stock stock = stockRepository.findBySymbol(tr.getStockSymbol())
+                    .orElseThrow(() -> new RuntimeException("stock not found: " + tr.getStockSymbol()));
+            transaction.setStock(stock);
+            transaction.setType("BUY");
+            transaction.setQuantity(tr.getQuantity());
+            transaction.setPrice(tr.getPricePerUnit());
+            transaction.setTimestamp(LocalDateTime.now());
+
+            transactionRepository.save(transaction);
+
         } else if ("SELL".equalsIgnoreCase(tr.getType())) {
             PortfolioHolding holding = portfolioHoldingRepository
                     .findByPortfolioIdAndStockSymbol(portfolio.getId(), tr.getStockSymbol())
@@ -118,6 +132,21 @@ public class TradeRequestController {
             BigDecimal totalGain = BigDecimal.valueOf(tr.getQuantity() * tr.getPricePerUnit());
             portfolio.setBalance(portfolio.getBalance().add(totalGain));
             portfolioRepository.save(portfolio);
+
+
+            //sava a transaction
+            Transaction transaction = new Transaction();
+            transaction.setUser(portfolio.getUser());
+
+            Stock stock = stockRepository.findBySymbol(tr.getStockSymbol())
+                    .orElseThrow(() -> new RuntimeException("stock not found: " + tr.getStockSymbol()));
+            transaction.setStock(stock);
+            transaction.setType("BUY");
+            transaction.setQuantity(tr.getQuantity());
+            transaction.setPrice(tr.getPricePerUnit());
+            transaction.setTimestamp(LocalDateTime.now());
+
+            transactionRepository.save(transaction);
         }
 
         tr.setStatus("APPROVED");

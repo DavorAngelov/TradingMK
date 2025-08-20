@@ -23,6 +23,12 @@ public class Stock {
 
     private LocalDateTime lastUpdated;
     private Double lastPrice;
+
+    @Column(nullable = false)
+    private Double percentage = 0.0;
+
+    private Double turnover;
+
     public Double getLastPrice() {
         return lastPrice;
     }
@@ -31,12 +37,6 @@ public class Stock {
         this.lastPrice = lastPrice;
     }
 
-
-
-    @Column(nullable = false)
-    private Double percentage = 0.0;
-
-    private Double turnover;
 
     public Double getTurnover() {
         return turnover;
