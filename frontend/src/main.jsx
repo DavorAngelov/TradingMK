@@ -15,21 +15,26 @@ import Portfolio from "./pages/Portfolio/Portfolio.jsx";
 import Education from "./pages/Education/Education.jsx";
 import Settings from "./pages/Settings/Settings.jsx";
 import AdminTrades from "./pages/AdminTrades/AdminTrades.jsx";
+import {GoogleOAuthProvider} from "@react-oauth/google";
+
+
 
 createRoot(document.getElementById('root')).render(
-
-        <BrowserRouter>
-            <Routes>
-                <Route path="/dashboard" element={<Dashboard/>}></Route>
-                <Route path="/" element={<LandingPage/>}></Route>
-                <Route path="/detailed/:symbol" element={<DetailedStockView/>}></Route>
-                <Route path="/signup" element={<SignupPage />} />
-                <Route path="/login" element={<LoginPage />} />
-                <Route path="/portfolio" element={<Portfolio />} />
-                <Route path="/education" element={<Education/>} />
-                <Route path="/settings" element={<Settings/>} />
-                <Route path="/admin" element={<AdminTrades/>} />
-            </Routes>
-        </BrowserRouter>
-
+    <StrictMode>
+        <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
+            <BrowserRouter>
+                <Routes>
+                    <Route path="/dashboard" element={<Dashboard />} />
+                    <Route path="/" element={<LandingPage />} />
+                    <Route path="/detailed/:symbol" element={<DetailedStockView />} />
+                    <Route path="/signup" element={<SignupPage />} />
+                    <Route path="/login" element={<LoginPage />} />
+                    <Route path="/portfolio" element={<Portfolio />} />
+                    <Route path="/education" element={<Education />} />
+                    <Route path="/settings" element={<Settings />} />
+                    <Route path="/admin" element={<AdminTrades />} />
+                </Routes>
+            </BrowserRouter>
+        </GoogleOAuthProvider>
+    </StrictMode>
 )

@@ -61,26 +61,26 @@ public class PortfolioController {
         return ResponseEntity.ok(portfolioDTO);
     }
 
-    @PostMapping("/buy")
-    public ResponseEntity<String> buyStock(@RequestBody BuyStockRequest request, Principal principal) {
-        System.out.println("Principal: " + principal);
-        //geting user
-        var user = userRepository.findByUsername(principal.getName())
-                .orElseThrow(() -> new RuntimeException("user not found"));
-
-        //portfolio gett
-        var portfolio = portfolioRepository.findByUserId(user.getId())
-                .orElseThrow(() -> new RuntimeException("portfolio not found"));
-
-        portfolioService.buyStock(
-                portfolio.getId(),
-                request.getStockSymbol(),
-                request.getQuantity(),
-                request.getPricePerUnit()
-        );
-
-        return ResponseEntity.ok("stock purchased successfuly");
-    }
+//    @PostMapping("/buy")
+//    public ResponseEntity<String> buyStock(@RequestBody BuyStockRequest request, Principal principal) {
+//        System.out.println("Principal: " + principal);
+//        //geting user
+//        var user = userRepository.findByUsername(principal.getName())
+//                .orElseThrow(() -> new RuntimeException("user not found"));
+//
+//        //portfolio gett
+//        var portfolio = portfolioRepository.findByUserId(user.getId())
+//                .orElseThrow(() -> new RuntimeException("portfolio not found"));
+//
+//        portfolioService.buyStock(
+//                portfolio.getId(),
+//                request.getStockSymbol(),
+//                request.getQuantity(),
+//                request.getPricePerUnit()
+//        );
+//
+//        return ResponseEntity.ok("stock purchased successfuly");
+//    }
 
     @PostMapping("/sell")
     public ResponseEntity<String> sellStock(@RequestBody SellStockRequest request, Principal principal) {

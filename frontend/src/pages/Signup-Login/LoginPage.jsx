@@ -1,5 +1,6 @@
 import React, {useState} from 'react';
 import {useNavigate} from "react-router-dom";
+import {GoogleLogin} from "@react-oauth/google";
 
 const LoginPage = () => {
     const [username, setUsername] = useState('');
@@ -60,6 +61,36 @@ const LoginPage = () => {
         }
     };
 
+
+
+
+
+
+    const handleGoogleLogin = async (credentialResponse) => {
+        try {
+            const token = credentialResponse.credential; // ID token
+            const res = await fetch('http://localhost:8080/api/auth/google', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ credential: token })
+            });
+
+            if (!res.ok) {
+                const msg = await res.text();
+                alert(msg);
+                return;
+            }
+
+            const data = await res.json();
+            localStorage.setItem('accessToken', data.token);
+            alert('Google login successful!');
+            navigate('/dashboard');
+        } catch (err) {
+            console.error(err);
+            alert('Login failed');
+        }
+    };
+
     return (
 
 
@@ -102,7 +133,20 @@ const LoginPage = () => {
                 </form>
                 {error && <p className="text-red-600 mt-4">{error}</p>}
                 {success && <p className="text-green-600 mt-4">{success}</p>}
+
+                    <div className="max-w-md mx-auto mt-10 p-6 bg-white rounded shadow text-center">
+                        <h2 className="text-2xl mb-4 font-semibold">Login with Google</h2>
+                        <GoogleLogin
+                            onSuccess={handleGoogleLogin}
+                            onError={() => {
+                                console.log('Login Failed');
+                            }}
+                        />
+                    </div>
             </div>
+
+
+
         </div>
     );
 };
