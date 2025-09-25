@@ -4,6 +4,7 @@ package com.tradingmk.backend.service;
 import com.tradingmk.backend.dto.AuthenticationResponse;
 import com.tradingmk.backend.dto.AuthenticationRequest;
 import com.tradingmk.backend.dto.RegisterRequest;
+import com.tradingmk.backend.model.AuthProvider;
 import com.tradingmk.backend.model.Portfolio;
 import com.tradingmk.backend.model.Role;
 import com.tradingmk.backend.model.User;
@@ -18,6 +19,7 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -40,6 +42,7 @@ public class AuthenticationService {
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
                 .role(Role.USER)
+                .authProviders(Set.of(AuthProvider.INTERNAL))
                 .build();
         //save
         repository.save(user);

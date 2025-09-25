@@ -3,10 +3,8 @@ package com.tradingmk.backend.controller;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.gson.GsonFactory;
 import com.tradingmk.backend.dto.GoogleAuthRequest;
-import com.tradingmk.backend.model.AuthProvider;
-import com.tradingmk.backend.model.Portfolio;
-import com.tradingmk.backend.model.Role;
-import com.tradingmk.backend.model.User;
+import com.tradingmk.backend.model.*;
+import com.tradingmk.backend.repository.PendingLinkRepository;
 import com.tradingmk.backend.repository.PortfolioRepository;
 import com.tradingmk.backend.repository.UserRepository;
 import com.tradingmk.backend.service.UserService;
@@ -17,6 +15,7 @@ import org.springframework.web.client.RestTemplate;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -30,7 +29,7 @@ public class GoogleOAuthController {
     private final UserRepository userRepository;
     private final UserService userService;
     private final PortfolioRepository portfolioRepository;
-
+    private final PendingLinkRepository pendingLinkRepository;
     private final RestTemplate restTemplate = new RestTemplate();
 
 
@@ -81,16 +80,30 @@ public class GoogleOAuthController {
                 portfolioRepository.save(portfolio);
 
                 String jwt = userService.generateToken(newUser);
-                return ResponseEntity.ok(Collections.singletonMap("token", jwt));
+                return ResponseEntity.ok(Collections.singletonMap("token", jwt)); //tuka probaj
             }
 
             // case B: email exists but ony intternal
             if (user.getAuthProviders().contains(AuthProvider.INTERNAL) &&
                     !user.getAuthProviders().contains(AuthProvider.GOOGLE)) {
-                return ResponseEntity.status(403).body(
-                        "Веќе имате акаунт со е-пошта и лозинка. Најавете се прво со вашата лозинка. " +
-                                "Потоа во профилот може да го поврзете Google."
-                );
+
+                // Generate token
+                String pendingToken = java.util.UUID.randomUUID().toString();
+                Instant now = Instant.now();
+                PendingLink pendingLink = PendingLink.builder()
+                        .token(pendingToken)
+                        .email(email)
+                        .provider("GOOGLE")
+                        .createdAt(now)
+                        .expiresAt(now.plusSeconds(60 * 15)) // 15 min expiry
+                        .build();
+                pendingLinkRepository.save(pendingLink);
+
+                Map<String, Object> resp = new HashMap<>();
+                resp.put("message", "Account exists as INTERNAL. Confirm internal credentials to link Google.");
+                resp.put("pendingToken", pendingToken);
+
+                return ResponseEntity.status(409).body(resp);
             }
 
             // case c: already has google
