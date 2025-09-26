@@ -366,7 +366,7 @@ const DetailedStockView = () => {
 
                     <button
                         onClick={() => setShowWatchlistPopup(true)}
-                        className="w-full bg-yellow-400 text-white py-3 rounded-lg font-medium mb-4 mt-4"
+                        className="w-full bg-yellow-400 text-white py-3 rounded-lg font-medium mb-4 mt-4 cursor-pointer"
                     >
                         Add to Watchlist
                     </button>

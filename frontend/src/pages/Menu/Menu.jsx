@@ -44,6 +44,15 @@ const Menu = () => {
                     >
                         My Portfolio
                     </NavLink>
+
+                    <NavLink
+                        to="/watchlist"
+                        className={({ isActive }) =>
+                            isActive ? 'border-b-2 border-blue-400 pb-1 hover:text-gray-600' : 'hover:text-gray-600'
+                        }
+                    >
+                        Watchlist
+                    </NavLink>
                 </div>
 
                 {/* Right side: User info */}
