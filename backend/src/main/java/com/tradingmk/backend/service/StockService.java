@@ -44,4 +44,11 @@ public class StockService {
             }
         }
     }
+
+    public Stock getBySymbol(String symbol) {
+        return stockRepository.findBySymbol(symbol)
+                .orElseThrow(() -> new RuntimeException("Stock not found with symbol: " + symbol));
+    }
+
+
 }

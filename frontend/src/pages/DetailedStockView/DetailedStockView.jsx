@@ -17,6 +17,11 @@ const DetailedStockView = () => {
 
     const [portfolio, setPortfolio] = useState(null);
 
+    const [showWatchlistPopup, setShowWatchlistPopup] = useState(false);
+    const [priceAbove, setPriceAbove] = useState("");
+    const [priceBelow, setPriceBelow] = useState("");
+    const [selectedStockId, setSelectedStockId] = useState(null);
+
 
     useEffect(() => {
         const isDemo = localStorage.getItem("demo") === "true";
@@ -179,6 +184,40 @@ const DetailedStockView = () => {
             .catch(err => console.error("Error fetching balance", err));
     }}, []);
 
+    const handleAddToWatchlist = async () => {
+        const token = localStorage.getItem("accessToken");
+        console.log("Token:", token);
+        if (!token) {
+            alert("loggin to use watchlist");
+            return;
+        }
+
+        try {
+            await fetch("http://localhost:8080/api/watchlist", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
+                },
+                body: JSON.stringify({
+                    symbol: symbol,
+                    priceAbove: priceAbove ? parseFloat(priceAbove) : null,
+                    priceBelow: priceBelow ? parseFloat(priceBelow) : null
+                })
+            });
+
+            alert(`Stock ${symbol} added to watchlist!`);
+            setShowWatchlistPopup(false);
+            setPriceAbove("");
+            setPriceBelow("");
+        } catch (err) {
+            console.error(err);
+            alert("failed to add ");
+        }
+    };
+
+
+
     return (
         <div className="min-h-screen bg-white text-gray-900  mb-4">
             <Menu/>
@@ -323,6 +362,51 @@ const DetailedStockView = () => {
 
                         </div>
                     </div>
+
+
+                    <button
+                        onClick={() => setShowWatchlistPopup(true)}
+                        className="w-full bg-yellow-400 text-white py-3 rounded-lg font-medium mb-4 mt-4"
+                    >
+                        Add to Watchlist
+                    </button>
+
+                    {showWatchlistPopup && (
+                        <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50">
+                            <div className="bg-white p-6 rounded-lg w-80">
+                                <h3 className="text-lg font-semibold mb-4">{symbol} - Set Alert Prices</h3>
+                                <input
+                                    type="number"
+                                    placeholder="Price Above"
+                                    className="w-full mb-2 p-2 border rounded"
+                                    value={priceAbove}
+                                    onChange={(e) => setPriceAbove(e.target.value)}
+                                />
+                                <input
+                                    type="number"
+                                    placeholder="Price Below"
+                                    className="w-full mb-4 p-2 border rounded"
+                                    value={priceBelow}
+                                    onChange={(e) => setPriceBelow(e.target.value)}
+                                />
+                                <div className="flex justify-end space-x-2">
+                                    <button
+                                        onClick={handleAddToWatchlist}
+                                        className="bg-green-500 text-white px-4 py-2 rounded"
+                                    >
+                                        Save
+                                    </button>
+                                    <button
+                                        onClick={() => setShowWatchlistPopup(false)}
+                                        className="bg-gray-300 text-gray-700 px-4 py-2 rounded"
+                                    >
+                                        Cancel
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
                 </div>
             </div>
         </div>

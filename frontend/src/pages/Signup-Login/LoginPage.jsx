@@ -177,7 +177,7 @@ const LoginPage = () => {
                 {success && <p className="text-green-600 mt-4">{success}</p>}
 
                 <div className="max-w-md mx-auto mt-10 p-6 bg-white rounded shadow text-center">
-                    <h2 className="text-2xl mb-4 font-semibold">Login with Google</h2>
+                    <h2 className="text-2xl mb-4 font-semibold">Log in / Sign in with Google</h2>
                     <GoogleLogin
                         onSuccess={handleGoogleLogin}
                         onError={() => {
@@ -192,11 +192,11 @@ const LoginPage = () => {
                 <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50">
                     <div className="bg-white rounded-2xl shadow-xl p-8 w-full max-w-md animate-fadeIn">
                         <h3 className="text-xl font-semibold text-gray-800 mb-4">
-                            Поврзување со постоечки акаунт
+                            Linking with an existing account
                         </h3>
                         <p className="text-gray-600 mb-6">
-                            Внесете го вашето <span className="font-medium">корисничко име</span> и
-                            <span className="font-medium"> лозинка</span> за да ги поврзете Google податоците.
+                          Enter your <span className="font-medium">username</span> and
+                          <span className="font-medium"> password</span> to link your Google account.
                         </p>
 
                         <form onSubmit={confirmLink} className="space-y-4">
@@ -237,7 +237,7 @@ const LoginPage = () => {
                         </form>
                     </div>
                 </div>
-            )}
+                )}
 
 
         </div>
