@@ -32,7 +32,8 @@ public class SecurityConfig {
                         "/ws/**",
                         "/topic/**",
                         "/api/history/upload",
-                        "/api/history/{symbol}","/api/trades/**","/api/auth/link/confirm","/api/watchlist/**")
+                        "/api/history/{symbol}","/api/trades/**","/api/auth/link/confirm","/api/watchlist/**","/api/transactions","/api/transactions/**",
+                        "/api/transactions/export","/api/transactions/import")
                 .permitAll()
                 .anyRequest()
                 .authenticated()

@@ -17,6 +17,7 @@ import Settings from "./pages/Settings/Settings.jsx";
 import AdminTrades from "./pages/AdminTrades/AdminTrades.jsx";
 import {GoogleOAuthProvider} from "@react-oauth/google";
 import Watchlist from "./pages/Watchlist/Watchlist.jsx";
+import TransactionsPage from "./pages/TransactionsPage/TransactionsPage.jsx";
 
 
 
@@ -35,6 +36,7 @@ createRoot(document.getElementById('root')).render(
                     <Route path="/settings" element={<Settings />} />
                     <Route path="/admin" element={<AdminTrades />} />
                     <Route path="/watchlist" element={<Watchlist />} />
+                    <Route path="/transactions" element={<TransactionsPage />} />
                 </Routes>
             </BrowserRouter>
         </GoogleOAuthProvider>
