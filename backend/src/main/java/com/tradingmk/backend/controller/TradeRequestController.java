@@ -3,6 +3,7 @@ package com.tradingmk.backend.controller;
 
 import com.tradingmk.backend.model.*;
 import com.tradingmk.backend.repository.*;
+import com.tradingmk.backend.service.EmailService;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,12 +23,15 @@ public class TradeRequestController {
     private final TransactionRepository transactionRepository;
     private final StockRepository stockRepository;
 
-    public TradeRequestController(TradeRequestRepository tradeRequestRepository, PortfolioRepository portfolioRepository, PortfolioHoldingRepository portfolioHoldingRepository, TransactionRepository transactionRepository, StockRepository stockRepository) {
+    private final EmailService emailService;
+
+    public TradeRequestController(TradeRequestRepository tradeRequestRepository, PortfolioRepository portfolioRepository, PortfolioHoldingRepository portfolioHoldingRepository, TransactionRepository transactionRepository, StockRepository stockRepository, EmailService emailService) {
         this.tradeRequestRepository = tradeRequestRepository;
         this.portfolioRepository = portfolioRepository;
         this.portfolioHoldingRepository = portfolioHoldingRepository;
         this.transactionRepository = transactionRepository;
         this.stockRepository = stockRepository;
+        this.emailService = emailService;
     }
 
     // sending the trade request
@@ -150,6 +154,13 @@ public class TradeRequestController {
         }
 
         tr.setStatus("APPROVED");
+
+        emailService.sendEmail(
+                portfolio.getUser().getEmail(),
+                "Trade Approved - " + tr.getStockSymbol(),
+                "Your request to " + tr.getType() + " " + tr.getQuantity() +
+                " shares of " + tr.getStockSymbol() + " has been approved."
+        );
         return tradeRequestRepository.save(tr);
     }
 
@@ -157,6 +168,14 @@ public class TradeRequestController {
     public TradeRequest declineTrade(@PathVariable Long id) {
         TradeRequest tr = tradeRequestRepository.findById(id).orElseThrow();
         tr.setStatus("DECLINED");
+        Portfolio portfolio = portfolioRepository.findById(tr.getPortfolioId())
+                .orElseThrow(() -> new RuntimeException("Portfolio not found"));
+        emailService.sendEmail(
+                portfolio.getUser().getEmail(),
+                "Trade Declined - " + tr.getStockSymbol(),
+                "Your request to " + tr.getType() + " " + tr.getQuantity() +
+                        " shares of " + tr.getStockSymbol() + " has been declined."
+        );
         return tradeRequestRepository.save(tr);
     }
 }

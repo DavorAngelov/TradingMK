@@ -17,7 +17,7 @@ public class WatchlistAlertService {
     private final WatchlistRepository repository;
     private final JavaMailSender mailSender;
 
-    @Scheduled(fixedRate = 60000) // 60s
+    @Scheduled(fixedRate = 60000) //1minute
     public void checkWatchlist() {
         List<WatchlistEntry> entries = repository.findAll();
 
