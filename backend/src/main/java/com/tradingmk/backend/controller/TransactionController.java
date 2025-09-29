@@ -2,6 +2,7 @@ package com.tradingmk.backend.controller;
 
 import com.tradingmk.backend.model.Stock;
 import com.tradingmk.backend.model.Transaction;
+import com.tradingmk.backend.model.TransactionOrigin;
 import com.tradingmk.backend.model.User;
 import com.tradingmk.backend.repository.StockRepository;
 import com.tradingmk.backend.repository.TransactionRepository;
@@ -76,6 +77,7 @@ public class TransactionController {
                 transaction.setQuantity(Integer.parseInt(data[3]));
                 transaction.setPrice(Double.parseDouble(data[4]));
                 transaction.setTimestamp(LocalDateTime.parse(data[5]));
+                transaction.setOrigin(TransactionOrigin.EXTERNAL);
 
                 transactionRepository.save(transaction);
             }

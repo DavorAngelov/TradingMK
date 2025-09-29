@@ -53,6 +53,15 @@ const Menu = () => {
                     >
                         Watchlist
                     </NavLink>
+
+                    <NavLink
+                        to="/transactions"
+                        className={({ isActive }) =>
+                            isActive ? 'border-b-2 border-blue-400 pb-1 hover:text-gray-600' : 'hover:text-gray-600'
+                        }
+                    >
+                        Transactions
+                    </NavLink>
                 </div>
 
                 {/* Right side: User info */}

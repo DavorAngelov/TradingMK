@@ -132,6 +132,7 @@ const TransactionsPage = () => {
                     <th className="border px-2 py-1">Quantity</th>
                     <th className="border px-2 py-1">Price</th>
                     <th className="border px-2 py-1">Timestamp</th>
+                    <th className="border px-2 py-1">Origin</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -143,6 +144,7 @@ const TransactionsPage = () => {
                         <td className="border px-2 py-1">{t.quantity}</td>
                         <td className="border px-2 py-1">{t.price}</td>
                         <td className="border px-2 py-1">{t.timestamp}</td>
+                        <td className="border px-2 py-1">{t.origin}</td>
                     </tr>
                 ))}
                 </tbody>

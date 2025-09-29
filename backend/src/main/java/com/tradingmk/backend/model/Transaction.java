@@ -24,6 +24,18 @@ public class Transaction {
     private Double price;
     private LocalDateTime timestamp;
 
+    @Enumerated(EnumType.STRING)
+    private TransactionOrigin origin = TransactionOrigin.INTERNAL;
+
+    public TransactionOrigin getOrigin() {
+        return origin;
+    }
+
+    public void setOrigin(TransactionOrigin origin) {
+        this.origin = origin;
+    }
+
+
     public Long getId() {
         return id;
     }
@@ -80,3 +92,4 @@ public class Transaction {
         this.timestamp = timestamp;
     }
 }
+
