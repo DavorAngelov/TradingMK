@@ -30,8 +30,8 @@ public class User implements UserDetails {
 
     private String username;
     private String password;
-    private String fullName;
-    private Double balance;
+
+
     private String email;
 
     @ElementCollection(fetch = FetchType.EAGER)
@@ -120,21 +120,7 @@ public class User implements UserDetails {
         this.password = password;
     }
 
-    public String getFullName() {
-        return fullName;
-    }
 
-    public void setFullName(String fullName) {
-        this.fullName = fullName;
-    }
-
-    public Double getBalance() {
-        return balance;
-    }
-
-    public void setBalance(Double balance) {
-        this.balance = balance;
-    }
 
     public String getEmail() {
         return email;

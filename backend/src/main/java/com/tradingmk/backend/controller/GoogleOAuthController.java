@@ -68,9 +68,7 @@ public class GoogleOAuthController {
                 User newUser = new User();
                 newUser.setEmail(email);
                 newUser.setUsername(email);
-                newUser.setFullName(name);
                 newUser.setRole(Role.USER);
-                newUser.setBalance(0.0);
                 newUser.setAuthProviders(Set.of(AuthProvider.GOOGLE));
                 userRepository.save(newUser);
 
