@@ -1,7 +1,7 @@
 package com.tradingmk.backend.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
-import jakarta.persistence.Entity;
 
 import java.time.LocalDateTime;
 
@@ -12,8 +12,11 @@ public class TradeRequest {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "portfolio_id")
-    private Long portfolioId;
+    @JoinColumn(name = "portfolio_id")
+    @ManyToOne
+    @JsonBackReference
+    private Portfolio portfolio;
+    //private Long portfolioId;
 
 
     private String stockSymbol;
@@ -33,13 +36,7 @@ public class TradeRequest {
         this.id = id;
     }
 
-    public Long getPortfolioId() {
-        return portfolioId;
-    }
 
-    public void setPortfolioId(Long portfolioId) {
-        this.portfolioId = portfolioId;
-    }
 
     public String getStockSymbol() {
         return stockSymbol;
@@ -87,5 +84,13 @@ public class TradeRequest {
 
     public void setTimestamp(LocalDateTime timestamp) {
         this.timestamp = timestamp;
+    }
+
+    public Portfolio getPortfolio() {
+        return portfolio;
+    }
+
+    public void setPortfolio(Portfolio portfolio) {
+        this.portfolio = portfolio;
     }
 }

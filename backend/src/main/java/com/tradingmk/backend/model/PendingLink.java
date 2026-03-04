@@ -19,7 +19,13 @@ public class PendingLink {
 
     private String provider;
 
+
+
     private Instant expiresAt;
 
     private Instant createdAt;
+
+    @OneToOne(optional = false)
+    @JoinColumn(name = "user_id", unique = true)
+    private User user;
 }

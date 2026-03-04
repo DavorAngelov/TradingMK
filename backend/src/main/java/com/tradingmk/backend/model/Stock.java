@@ -1,10 +1,13 @@
 package com.tradingmk.backend.model;
 
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "stock", uniqueConstraints = @UniqueConstraint(columnNames = "symbol"))
@@ -28,6 +31,35 @@ public class Stock {
     private Double percentage = 0.0;
 
     private Double turnover;
+
+    @OneToMany(mappedBy = "stock", cascade = CascadeType.ALL)
+    @JsonManagedReference
+    private List<StockHistory> history = new ArrayList<>();
+
+    @OneToMany(mappedBy = "stock", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
+    private List<PortfolioHolding> holdings = new ArrayList<>();
+
+    public List<PortfolioHolding> getHoldings() {
+        return holdings;
+    }
+
+    public void setHoldings(List<PortfolioHolding> holdings) {
+        this.holdings = holdings;
+    }
+
+
+
+
+    public List<StockHistory> getHistory() {
+        return history;
+    }
+
+    public void setHistory(List<StockHistory> history) {
+        this.history = history;
+    }
+
+
 
     public Double getLastPrice() {
         return lastPrice;

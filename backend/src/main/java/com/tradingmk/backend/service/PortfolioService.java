@@ -54,11 +54,14 @@ public class PortfolioService {
 
         portfolio.setBalance(portfolio.getBalance().subtract(totalCost));
 
+        Stock stock1 = stockRepository.findBySymbol(stockSymbol)
+                .orElseThrow(() -> new RuntimeException("Stock not found"));
+
         PortfolioHolding holding = holdingRepository
-                .findByPortfolioIdAndStockSymbol(portfolioId, stockSymbol)
+                .findByPortfolioIdAndStock_Symbol(portfolioId, stockSymbol)
                 .orElse(PortfolioHolding.builder()
                         .portfolio(portfolio)
-                        .stockSymbol(stockSymbol)
+                        .stock(stock1)
                         .quantity(0)
                         .avgPrice(BigDecimal.ZERO)
                         .build());
@@ -103,8 +106,9 @@ public class PortfolioService {
                 .orElseThrow(() -> new RuntimeException("portfolio not found"));
 
         PortfolioHolding holding = holdingRepository
-                .findByPortfolioIdAndStockSymbol(portfolioId, stockSymbol)
+                .findByPortfolioIdAndStock_Symbol(portfolioId, stockSymbol)
                 .orElseThrow(() -> new RuntimeException("stock not found in portfolio"));
+
 
         // checks
         if (holding.getQuantity() < quantity) {

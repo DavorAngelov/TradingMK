@@ -50,7 +50,7 @@ public class PortfolioController {
         List<PortfolioHoldingDTO> holdings = portfolioHoldingRepository.findByPortfolioId(portfolio.getId())
                 .stream()
                 .map(holding -> new PortfolioHoldingDTO(
-                        holding.getStockSymbol(),
+                        holding.getStock().getSymbol(),
                         holding.getQuantity(),
                         holding.getAvgPrice()
                 ))

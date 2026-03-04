@@ -90,6 +90,7 @@ public class GoogleOAuthController {
                 Instant now = Instant.now();
                 PendingLink pendingLink = PendingLink.builder()
                         .token(pendingToken)
+                        .user(user)
                         .email(email)
                         .provider("GOOGLE")
                         .createdAt(now)

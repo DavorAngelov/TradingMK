@@ -44,7 +44,7 @@ public class TradeRequestController {
         Portfolio portfolio = portfolioRepository.findByUserId(user.getId())
                 .orElseThrow(() -> new RuntimeException("Portfolio not found for user"));
 
-        tradeRequest.setPortfolioId(portfolio.getId());
+        tradeRequest.setPortfolio(portfolio);
         System.out.println("Portfolio ID set: " + portfolio.getId());
 
         return tradeRequestRepository.save(tradeRequest);
@@ -67,8 +67,8 @@ public class TradeRequestController {
         }
 
         // Load portfolio from tradeRequest
-        Portfolio portfolio = portfolioRepository.findById(tr.getPortfolioId())
-                .orElseThrow(() -> new RuntimeException("Portfolio not found"));
+        Portfolio portfolio = tr.getPortfolio();
+
 
         if ("BUY".equalsIgnoreCase(tr.getType())) {
             BigDecimal totalCost = BigDecimal.valueOf(tr.getQuantity() * tr.getPricePerUnit());
@@ -79,12 +79,15 @@ public class TradeRequestController {
             portfolio.setBalance(portfolio.getBalance().subtract(totalCost));
             portfolioRepository.save(portfolio);
 
+            Stock stock1 = stockRepository.findBySymbol(tr.getStockSymbol())
+                    .orElseThrow(() -> new RuntimeException("Stock not found"));
+
             PortfolioHolding holding = portfolioHoldingRepository
-                    .findByPortfolioIdAndStockSymbol(portfolio.getId(), tr.getStockSymbol())
+                    .findByPortfolioIdAndStock_Symbol(portfolio.getId(), tr.getStockSymbol())
                     .orElseGet(() -> {
                         PortfolioHolding newHolding = new PortfolioHolding();
                         newHolding.setPortfolio(portfolio);
-                        newHolding.setStockSymbol(tr.getStockSymbol());
+                        newHolding.setStock(stock1);
                         newHolding.setQuantity(0);
                         newHolding.setAvgPrice(BigDecimal.ZERO);
                         return newHolding;
@@ -115,7 +118,7 @@ public class TradeRequestController {
 
         } else if ("SELL".equalsIgnoreCase(tr.getType())) {
             PortfolioHolding holding = portfolioHoldingRepository
-                    .findByPortfolioIdAndStockSymbol(portfolio.getId(), tr.getStockSymbol())
+                    .findByPortfolioIdAndStock_Symbol(portfolio.getId(), tr.getStockSymbol())
                     .orElseThrow(() -> new RuntimeException("No holdings for stock " + tr.getStockSymbol()));
 
             if (holding.getQuantity() < tr.getQuantity()) {
@@ -145,7 +148,7 @@ public class TradeRequestController {
             Stock stock = stockRepository.findBySymbol(tr.getStockSymbol())
                     .orElseThrow(() -> new RuntimeException("stock not found: " + tr.getStockSymbol()));
             transaction.setStock(stock);
-            transaction.setType("BUY");
+            transaction.setType("SELL");
             transaction.setQuantity(tr.getQuantity());
             transaction.setPrice(tr.getPricePerUnit());
             transaction.setTimestamp(LocalDateTime.now());
@@ -155,12 +158,16 @@ public class TradeRequestController {
 
         tr.setStatus("APPROVED");
 
-        emailService.sendEmail(
-                portfolio.getUser().getEmail(),
-                "Trade Approved - " + tr.getStockSymbol(),
-                "Your request to " + tr.getType() + " " + tr.getQuantity() +
-                " shares of " + tr.getStockSymbol() + " has been approved."
-        );
+        try {
+            emailService.sendEmail(
+                    portfolio.getUser().getEmail(),
+                    "Trade Approved - " + tr.getStockSymbol(),
+                    "Your request to " + tr.getType() + " " + tr.getQuantity() +
+                            " shares of " + tr.getStockSymbol() + " has been approved."
+            );
+        } catch (Exception e) {
+            System.err.println("Email failed but trade was approved: " + e.getMessage());
+        }
         return tradeRequestRepository.save(tr);
     }
 
@@ -168,8 +175,7 @@ public class TradeRequestController {
     public TradeRequest declineTrade(@PathVariable Long id) {
         TradeRequest tr = tradeRequestRepository.findById(id).orElseThrow();
         tr.setStatus("DECLINED");
-        Portfolio portfolio = portfolioRepository.findById(tr.getPortfolioId())
-                .orElseThrow(() -> new RuntimeException("Portfolio not found"));
+        Portfolio portfolio = tr.getPortfolio();
         emailService.sendEmail(
                 portfolio.getUser().getEmail(),
                 "Trade Declined - " + tr.getStockSymbol(),

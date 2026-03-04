@@ -9,57 +9,65 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.List;
 
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
-    private final  JwtAuthenticationFilter jwtAuthenticationFilter;
+
+    private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final AuthenticationProvider authenticationProvider;
+
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration config = new CorsConfiguration();
+        config.setAllowedOrigins(List.of(
+                "http://localhost:5173",
+                "http://localhost:5174",
+                "http://localhost:5175",
+                "http://localhost:5176",
+                "http://localhost:3000"
+        ));
+        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
+        config.setAllowedHeaders(List.of("*"));
+        config.setAllowCredentials(true);
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", config);
+        return source;
+    }
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                .cors()
-                .and()
-                .csrf()
-                .disable()
-                .authorizeHttpRequests()
-                .requestMatchers(
-                        "/api/auth/**",
-                        "/api/stocks/update",  // morame allow za da postiras
-                        "/api/stocks/**",
-                        "/ws/**",
-                        "/topic/**",
-                        "/api/history/upload",
-                        "/api/history/{symbol}","/api/trades/**","/api/auth/link/confirm","/api/watchlist/**","/api/transactions","/api/transactions/**",
-                        "/api/transactions/export","/api/transactions/import")
-                .permitAll()
-                .anyRequest()
-                .authenticated()
-                .and()
-                .sessionManagement()
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                .and()
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+                .csrf(csrf -> csrf.disable())
+                .authorizeHttpRequests(auth -> auth
+                        // Public endpoints
+                        .requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers("/api/stocks/**").permitAll()
+                        .requestMatchers("/ws/**", "/topic/**").permitAll()
+                        .requestMatchers("/api/history/**").permitAll()
+                        // Admin only
+                        .requestMatchers("/api/trades/*/approve").hasAuthority("ADMIN")
+                        .requestMatchers("/api/trades/*/decline").hasAuthority("ADMIN")
+                        .requestMatchers("/api/trades/pending").hasAuthority("ADMIN")
+                        // Authenticated users
+                        .requestMatchers("/api/trades/**").authenticated()
+                        .requestMatchers("/api/watchlist/**").authenticated()
+                        .requestMatchers("/api/transactions/**").authenticated()
+                        .anyRequest().authenticated()
+                )
+                .sessionManagement(s -> s
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                )
                 .authenticationProvider(authenticationProvider)
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
-
-
-//        http
-//                .cors(Customizer.withDefaults())
-//                .csrf(csrf -> csrf.disable())
-//                .authorizeHttpRequests(auth -> auth
-//                        .requestMatchers(
-//                                "/api/auth/**",
-//                                "/api/stocks/update",  // morame allow za da postiras, smeni go~!
-//                                "/api/stocks/**",
-//                                "/ws/**",
-//                                "/topic/**",
-//                                "api/history/upload",
-//                                "/api/history/{symbol}"
-//                        ).permitAll()
-//                        .anyRequest().authenticated()
-//                );
 
         return http.build();
     }

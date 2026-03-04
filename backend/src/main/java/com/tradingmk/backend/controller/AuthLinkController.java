@@ -62,9 +62,13 @@ public class AuthLinkController {
         }
 
         // verufy
-        if (!user.getEmail().equalsIgnoreCase(pending.getEmail())) {
-            return ResponseEntity.status(403).body("Pending link does not match authenticated user");
+//        if (!user.getEmail().equalsIgnoreCase(pending.getEmail())) {
+//            return ResponseEntity.status(403).body("Pending link does not match authenticated user");
+//        }
+        if (!pending.getUser().getId().equals(user.getId())) {
+            return ResponseEntity.status(403).body("Pending link does not belong to user");
         }
+
 
 
         Set<AuthProvider> providers = user.getAuthProviders();

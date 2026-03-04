@@ -2,9 +2,12 @@ package com.tradingmk.backend.model;
 
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name ="portfolios")
@@ -21,6 +24,18 @@ public class Portfolio {
 
     @Column(nullable = false, precision = 18, scale = 2)
     private BigDecimal balance = BigDecimal.ZERO;
+
+    @OneToMany(mappedBy = "portfolio", cascade = CascadeType.ALL)
+    @JsonManagedReference
+    private List<TradeRequest> tradeRequests = new ArrayList<>();
+
+    public List<TradeRequest> getTradeRequests() {
+        return tradeRequests;
+    }
+
+    public void setTradeRequests(List<TradeRequest> tradeRequests) {
+        this.tradeRequests = tradeRequests;
+    }
 
     public Long getId() {
         return id;

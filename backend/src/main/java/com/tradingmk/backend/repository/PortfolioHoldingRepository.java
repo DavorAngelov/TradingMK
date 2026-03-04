@@ -8,5 +8,6 @@ import java.util.Optional;
 
 public interface PortfolioHoldingRepository extends JpaRepository<PortfolioHolding,Long> {
     List<PortfolioHolding> findByPortfolioId(Long portfolioId);
-    Optional<PortfolioHolding> findByPortfolioIdAndStockSymbol(Long portfolioId, String stockSymbol);
+    Optional<PortfolioHolding>
+    findByPortfolioIdAndStock_Symbol(Long portfolioId, String symbol);
 }

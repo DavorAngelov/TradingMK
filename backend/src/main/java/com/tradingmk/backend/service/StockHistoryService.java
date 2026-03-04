@@ -3,6 +3,7 @@ package com.tradingmk.backend.service;
 import com.tradingmk.backend.model.Stock;
 import com.tradingmk.backend.model.StockHistory;
 import com.tradingmk.backend.repository.StockHistoryRepository;
+import com.tradingmk.backend.repository.StockRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,20 +18,34 @@ public class StockHistoryService {
     @Autowired
     private StockHistoryRepository stockHistoryRepository;
 
+    @Autowired
+    private StockRepository stockRepository;
+
     public void saveAll(List<StockHistory> histories) {
 
         for (StockHistory incoming : histories) {
+
+            Stock stock = stockRepository
+                    .findBySymbol(incoming.getStock().getSymbol())
+                    .orElseThrow(() ->
+                            new RuntimeException("Stock not found: " + incoming.getStock().getSymbol()));
+
             StockHistory history = new StockHistory();
-            history.setSymbol(incoming.getSymbol());
+            history.setStock(stock);
             history.setPrice(incoming.getPrice());
             history.setTimestamp(incoming.getTimestamp());
-            System.out.println("test saving: " + history.getSymbol() + ", " + history.getPrice() + ", " + history.getTimestamp());
+
             stockHistoryRepository.save(history);
         }
-
     }
 
     public List<StockHistory> getHistoryForSymbol(String symbol, LocalDate from, LocalDate to) {
-        return stockHistoryRepository.findBySymbolAndTimestampBetween(symbol, from, to);
+
+        Stock stock = stockRepository.findBySymbol(symbol)
+                .orElseThrow(() -> new RuntimeException("Stock not found: " + symbol));
+
+        return stockHistoryRepository
+                .findByStockAndTimestampBetween(stock, from, to);
     }
+
 }

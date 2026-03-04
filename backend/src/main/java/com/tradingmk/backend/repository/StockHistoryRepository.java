@@ -1,5 +1,6 @@
 package com.tradingmk.backend.repository;
 
+import com.tradingmk.backend.model.Stock;
 import com.tradingmk.backend.model.StockHistory;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
@@ -10,6 +11,14 @@ import java.util.List;
 
 @Repository
 public interface StockHistoryRepository extends JpaRepository<StockHistory, Long> {
-    List<StockHistory> findBySymbolAndTimestampBetween(String symbol, LocalDate from, LocalDate to);
+    //List<StockHistory> findBySymbolAndTimestampBetween(String symbol, LocalDate from, LocalDate to);
+
+    List<StockHistory> findByStockAndTimestampBetween(
+            Stock stock,
+            LocalDate from,
+            LocalDate to
+    );
+
+
 
 }
