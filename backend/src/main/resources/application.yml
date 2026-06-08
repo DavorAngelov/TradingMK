@@ -1,11 +1,18 @@
 spring:
   datasource:
     url: jdbc:postgresql://localhost:5432/tradingmk
+    #url: jdbc:postgresql://localhost:9999/db_202526z_va_prj_tradingmk
+    #username:  db_202526z_va_prj_tradingmk_owner
+    #password: 43e42de1a85c
+
+#    url: jdbc:postgresql://localhost:5432/tradingmk
     username: davorangelov
     password: 12345
+
+
   sql:
     init:
-      mode: always
+      mode: never
       schema-locations: classpath:sql/ddl.sql
       data-locations: classpath:sql/dml.sql
   jpa:

@@ -47,7 +47,7 @@ const DetailedStockView = () => {
         if (!symbol || !selectedTimeframe) return;
 
         let from, to;
-        const now = new Date("2026-01-23");
+        const now = new Date("2026-06-08");
 
         if (selectedTimeframe === '1w') {
             from = new Date(now);
@@ -58,12 +58,15 @@ const DetailedStockView = () => {
             from.setMonth(now.getMonth() - 1); // 1month
             to = now;
         }
+        //http://localhost:8080/api/history/KMB?from=2026-05-01&to=2026-06-08
+
         fetch(`http://localhost:8080/api/history/${symbol}?from=${from.toISOString().split('T')[0]}&to=${to.toISOString().split('T')[0]}`)
             .then(res => res.json())
             .then(data => {
                 const sorted = data.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
                 setChartData(sorted);
                 console.log(sorted)
+                console.log(from.toISOString().split('T')[0])
             })
             .catch(err => console.error("Fetch error:", err));
 
@@ -272,7 +275,7 @@ const DetailedStockView = () => {
                         <ResponsiveContainer width="100%" height="100%">
                             <LineChart data={chartData}>
                                 <XAxis
-                                    dataKey="time"
+                                    dataKey="timestamp"
                                     axisLine={false}
                                     tickLine={false}
                                     tick={{fill: '#6B7280', fontSize: 12}}

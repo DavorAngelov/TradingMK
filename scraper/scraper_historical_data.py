@@ -11,7 +11,6 @@ def get_stock_history(symbol, days=30):
     history_data = []
 
     table = soup.select_one(".table")
-    # dataTables_wrapper container-fluid dt-bootstrap4 no-footer ne e ova
     if not table:
         print("Table not found")
         return []
@@ -27,14 +26,18 @@ def get_stock_history(symbol, days=30):
                 date_obj = datetime.strptime(date_str, "%m/%d/%Y")
 
                 if date_obj < cutoff_date:
-                    break  # stop if date is older than cutoff
+                    break
 
                 close_price = float(cols[4].text.strip().replace(",", ""))
+
                 history_data.append({
-                    "symbol": symbol,
+                    "stock": {
+                        "symbol": symbol
+                    },
                     "timestamp": date_obj.strftime("%Y-%m-%d"),
                     "price": close_price
                 })
+
             except Exception as e:
                 print("Error parsing row:", e)
 

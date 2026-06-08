@@ -1,9 +1,6 @@
 package com.tradingmk.backend.service;
 
-import com.tradingmk.backend.model.Portfolio;
-import com.tradingmk.backend.model.PortfolioHolding;
-import com.tradingmk.backend.model.Stock;
-import com.tradingmk.backend.model.Transaction;
+import com.tradingmk.backend.model.*;
 import com.tradingmk.backend.repository.PortfolioHoldingRepository;
 import com.tradingmk.backend.repository.PortfolioRepository;
 import com.tradingmk.backend.repository.StockRepository;
@@ -13,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -22,56 +20,66 @@ public class PortfolioService {
 
     private final PortfolioRepository portfolioRepository;
     private final PortfolioHoldingRepository holdingRepository;
-
-
     private final TransactionRepository transactionRepository;
     private final StockRepository stockRepository;
 
     public Portfolio getPortfolioByUserId(Long userId) {
         return portfolioRepository.findByUserId(userId)
-                .orElseThrow(() -> new RuntimeException("pportfolio not found for user-id " + userId));
+                .orElseThrow(() -> new RuntimeException("Portfolio not found for user-id " + userId));
     }
 
     public List<PortfolioHolding> getHoldings(Long portfolioId) {
         return holdingRepository.findByPortfolioId(portfolioId);
     }
 
+    /**
+     * Entry point called by TradeRequestController on approval.
+     * Routes to buyStock or sellStock based on trade type.
+     */
+    @Transactional
+    public void executeTrade(TradeRequest tr) {
+        BigDecimal price = BigDecimal.valueOf(tr.getPricePerUnit());
+        Portfolio portfolio = tr.getPortfolio();
 
-    //need logic for buying a stock
+        if ("BUY".equalsIgnoreCase(tr.getType())) {
+            buyStock(portfolio.getId(), tr.getStockSymbol(), tr.getQuantity(), price);
+        } else if ("SELL".equalsIgnoreCase(tr.getType())) {
+            sellStock(portfolio.getId(), tr.getStockSymbol(), tr.getQuantity(), price);
+        } else {
+            throw new RuntimeException("Unknown trade type: " + tr.getType());
+        }
+    }
+
     @Transactional
     public void buyStock(Long portfolioId, String stockSymbol, int quantity, BigDecimal pricePerUnit) {
         Portfolio portfolio = portfolioRepository.findById(portfolioId)
                 .orElseThrow(() -> new RuntimeException("Portfolio not found"));
 
-
-        //multiply for how much stocks are bught
         BigDecimal totalCost = pricePerUnit.multiply(BigDecimal.valueOf(quantity));
 
-//        if (portfolio.getBalance().compareTo(totalCost) < 0) {
-//            throw new RuntimeException("not enough balance to buy stock");
-//        }
-        //TODO - > BRING BACK , JUST FOR TESTING !!
+        if (portfolio.getBalance().compareTo(totalCost) < 0) {
+            throw new RuntimeException("Insufficient balance to buy stock");
+        }
 
         portfolio.setBalance(portfolio.getBalance().subtract(totalCost));
 
-        Stock stock1 = stockRepository.findBySymbol(stockSymbol)
-                .orElseThrow(() -> new RuntimeException("Stock not found"));
+        Stock stock = stockRepository.findBySymbol(stockSymbol)
+                .orElseThrow(() -> new RuntimeException("Stock not found: " + stockSymbol));
 
         PortfolioHolding holding = holdingRepository
                 .findByPortfolioIdAndStock_Symbol(portfolioId, stockSymbol)
                 .orElse(PortfolioHolding.builder()
                         .portfolio(portfolio)
-                        .stock(stock1)
+                        .stock(stock)
                         .quantity(0)
                         .avgPrice(BigDecimal.ZERO)
                         .build());
 
-        // avg price bought
-        // alkaloid 2 x 22.000 + alkaloid 3x 28.000 average od ova
+        // Recalculate average price
         BigDecimal currentTotalValue = holding.getAvgPrice().multiply(BigDecimal.valueOf(holding.getQuantity()));
         BigDecimal newTotalValue = currentTotalValue.add(totalCost);
         int newQuantity = holding.getQuantity() + quantity;
-        BigDecimal newAvgPrice = newTotalValue.divide(BigDecimal.valueOf(newQuantity), BigDecimal.ROUND_HALF_UP);
+        BigDecimal newAvgPrice = newTotalValue.divide(BigDecimal.valueOf(newQuantity), RoundingMode.HALF_UP);
 
         holding.setQuantity(newQuantity);
         holding.setAvgPrice(newAvgPrice);
@@ -79,69 +87,51 @@ public class PortfolioService {
         holdingRepository.save(holding);
         portfolioRepository.save(portfolio);
 
-
-        //sava a transaction
+        // Save transaction
         Transaction transaction = new Transaction();
         transaction.setUser(portfolio.getUser());
-
-        Stock stock = stockRepository.findBySymbol(stockSymbol)
-                .orElseThrow(() -> new RuntimeException("stock not found: " + stockSymbol));
         transaction.setStock(stock);
-/*        transaction.setStock(stockRepository.findBySymbol(stockSymbol)
-                .orElseThrow(() -> new RuntimeException("Stock not found")));*/
         transaction.setType("BUY");
         transaction.setQuantity(quantity);
         transaction.setPrice(pricePerUnit.doubleValue());
         transaction.setTimestamp(LocalDateTime.now());
-
         transactionRepository.save(transaction);
-
-
     }
 
-    //sell
     @Transactional
     public void sellStock(Long portfolioId, String stockSymbol, int quantity, BigDecimal pricePerUnit) {
         Portfolio portfolio = portfolioRepository.findById(portfolioId)
-                .orElseThrow(() -> new RuntimeException("portfolio not found"));
+                .orElseThrow(() -> new RuntimeException("Portfolio not found"));
 
         PortfolioHolding holding = holdingRepository
                 .findByPortfolioIdAndStock_Symbol(portfolioId, stockSymbol)
-                .orElseThrow(() -> new RuntimeException("stock not found in portfolio"));
+                .orElseThrow(() -> new RuntimeException("Stock not found in portfolio"));
 
-
-        // checks
         if (holding.getQuantity() < quantity) {
-            throw new RuntimeException("not enough shares to sell");
+            throw new RuntimeException("Not enough shares to sell");
         }
 
         if (pricePerUnit == null) {
-            // fallback: get latest price from stock history or live API
             Stock stock = stockRepository.findBySymbol(stockSymbol)
-                    .orElseThrow(() -> new RuntimeException("stock not found: " + stockSymbol));
+                    .orElseThrow(() -> new RuntimeException("Stock not found: " + stockSymbol));
             pricePerUnit = BigDecimal.valueOf(stock.getCurrentPrice());
         }
 
-        // gain from the sale made
         BigDecimal totalGain = pricePerUnit.multiply(BigDecimal.valueOf(quantity));
 
-
         holding.setQuantity(holding.getQuantity() - quantity);
-
-        // if holding is zero ==== remove it from database
         if (holding.getQuantity() == 0) {
             holdingRepository.delete(holding);
         } else {
             holdingRepository.save(holding);
         }
 
-        // update
         portfolio.setBalance(portfolio.getBalance().add(totalGain));
         portfolioRepository.save(portfolio);
 
-
+        // Save transaction
         Stock stock = stockRepository.findBySymbol(stockSymbol)
-                .orElseThrow(() -> new RuntimeException("stock not found: " + stockSymbol));
+                .orElseThrow(() -> new RuntimeException("Stock not found: " + stockSymbol));
 
         Transaction transaction = new Transaction();
         transaction.setUser(portfolio.getUser());
@@ -150,9 +140,6 @@ public class PortfolioService {
         transaction.setQuantity(quantity);
         transaction.setPrice(pricePerUnit.doubleValue());
         transaction.setTimestamp(LocalDateTime.now());
-
         transactionRepository.save(transaction);
-
-        System.out.println("saved sell");
     }
 }
