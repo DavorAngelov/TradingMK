@@ -15,7 +15,7 @@ const LoginPage = () => {
     const [showLinkModal, setShowLinkModal] = useState(false);
 
     const login = async () => {
-        const response = await fetch('http://localhost:8080/api/auth/authenticate', {
+        const response = await fetch('/api/auth/authenticate', {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify({username, password})
@@ -71,7 +71,7 @@ const LoginPage = () => {
     const handleGoogleLogin = async (credentialResponse) => {
         try {
             const token = credentialResponse.credential; // id_token
-            const res = await fetch('http://localhost:8080/api/auth/google', {
+            const res = await fetch('/api/auth/google', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({credential: token})
@@ -104,7 +104,7 @@ const LoginPage = () => {
     const confirmLink = async (e) => {
         e.preventDefault();
         try {
-            const res = await fetch('http://localhost:8080/api/auth/link/confirm', {
+            const res = await fetch('/api/auth/link/confirm', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({

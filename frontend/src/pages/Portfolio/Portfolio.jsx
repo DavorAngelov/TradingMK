@@ -32,7 +32,7 @@ const Portfolio = () => {
             from.setMonth(now.getMonth() - 1); // 1month
             to = now;
         }
-        fetch(`http://localhost:8080/api/history/${symbol}?from=${from.toISOString().split('T')[0]}&to=${to.toISOString().split('T')[0]}`)
+        fetch(`/api/history/${symbol}?from=${from.toISOString().split('T')[0]}&to=${to.toISOString().split('T')[0]}`)
             .then(res => res.json())
             .then(data => {
                 const sorted = data.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
@@ -41,7 +41,7 @@ const Portfolio = () => {
             })
             .catch(err => console.error("Fetch error:", err));
 
-        fetch(`http://localhost:8080/api/stocks`)
+        fetch(`/api/stocks`)
             .then(res => res.json())
             .then(data => {
                 const stock = data.find(stock => stock.symbol === symbol);
@@ -79,7 +79,7 @@ const Portfolio = () => {
                 // fetch stock prices for holdings
                 const symbols = storedPortfolio.holdings.map(h => h.stockSymbol);
                 if (symbols.length > 0) {
-                    fetch("http://localhost:8080/api/stocks")
+                    fetch("/api/stocks")
                         .then(res => res.json())
                         .then(allStocks => {
                             const priceMap = {};
@@ -92,7 +92,7 @@ const Portfolio = () => {
                 }
             }
         } else{
-        fetch("http://localhost:8080/api/portfolio", {
+        fetch("/api/portfolio", {
             headers: {
                 'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
             }
@@ -105,7 +105,7 @@ const Portfolio = () => {
                 const symbols = data.holdings.map(h => h.stockSymbol);
                 if (symbols.length === 0) return;
 
-                fetch("http://localhost:8080/api/stocks")
+                fetch("/api/stocks")
                     .then(res => res.json())
                     .then(allStocks => {
 
@@ -202,7 +202,7 @@ const Portfolio = () => {
         }
 
         try {
-            const response = await fetch("http://localhost:8080/api/trades/request", {
+            const response = await fetch("/api/trades/request", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

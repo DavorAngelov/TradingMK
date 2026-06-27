@@ -21,7 +21,7 @@ const AllocationSection = () => {
     const [stocks, setStocks] = useState([]);
 
     useEffect(() => {
-        fetch("http://localhost:8080/api/stocks")
+        fetch("/api/stocks")
             .then((res) => res.json())
             .then((data) => {
                 const sortedData = data.sort((a, b) => new Date(b.lastUpdated) - new Date(a.lastUpdated));

@@ -30,7 +30,7 @@ const DetailedStockView = () => {
             setPortfolio(storedPortfolio);
             setAvailableBalance(storedPortfolio?.balance || 0);
         } else {
-            fetch('http://localhost:8080/api/portfolio', {
+            fetch('/api/portfolio', {
                 headers: {
                     'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
                 }
@@ -47,7 +47,7 @@ const DetailedStockView = () => {
         if (!symbol || !selectedTimeframe) return;
 
         let from, to;
-        const now = new Date("2026-06-08");
+        const now = new Date("2026-06-27");
 
         if (selectedTimeframe === '1w') {
             from = new Date(now);
@@ -60,7 +60,7 @@ const DetailedStockView = () => {
         }
         //http://localhost:8080/api/history/KMB?from=2026-05-01&to=2026-06-08
 
-        fetch(`http://localhost:8080/api/history/${symbol}?from=${from.toISOString().split('T')[0]}&to=${to.toISOString().split('T')[0]}`)
+        fetch(`/api/history/${symbol}?from=${from.toISOString().split('T')[0]}&to=${to.toISOString().split('T')[0]}`)
             .then(res => res.json())
             .then(data => {
                 const sorted = data.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
@@ -70,7 +70,7 @@ const DetailedStockView = () => {
             })
             .catch(err => console.error("Fetch error:", err));
 
-        fetch(`http://localhost:8080/api/stocks`)
+        fetch(`/api/stocks`)
             .then(res => res.json())
             .then(data => {
                 const stock = data.find(stock => stock.symbol === symbol);
@@ -136,7 +136,7 @@ const DetailedStockView = () => {
                 return;
             }
             try {
-                const response = await fetch("http://localhost:8080/api/trades/request", {
+                const response = await fetch("/api/trades/request", {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
@@ -179,7 +179,7 @@ const DetailedStockView = () => {
             setPortfolio(storedPortfolio);
         }else{
 
-        fetch("http://localhost:8080/api/portfolio", {
+        fetch("/api/portfolio", {
             headers: {Authorization: `Bearer ${token}`}
         })
             .then(res => res.json())
@@ -196,7 +196,7 @@ const DetailedStockView = () => {
         }
 
         try {
-            await fetch("http://localhost:8080/api/watchlist", {
+            await fetch("/api/watchlist", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

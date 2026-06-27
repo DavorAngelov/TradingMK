@@ -16,7 +16,7 @@ const AdminTrades = () => {
             return;
         }
 
-        fetch("http://localhost:8080/api/trades/pending", {
+        fetch("/api/trades/pending", {
             headers: {
                 "Authorization": `Bearer ${token}`
             }
@@ -40,7 +40,7 @@ const AdminTrades = () => {
             return;
         }
 
-        fetch(`http://localhost:8080/api/trades/${id}/${action}`, {
+        fetch(`/api/trades/${id}/${action}`, {
             method: "POST",
             headers: {
                 "Authorization": `Bearer ${token}`

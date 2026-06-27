@@ -10,7 +10,7 @@ const TransactionsPage = () => {
     };
 
     useEffect(() => {
-        fetch("http://localhost:8080/api/transactions", {
+        fetch("/api/transactions", {
             method: "GET",
             headers: {
                 "Authorization": `Bearer ${localStorage.getItem("accessToken")}`,
@@ -28,7 +28,7 @@ const TransactionsPage = () => {
     }, []);
 
     const handleExport = () => {
-        fetch("http://localhost:8080/api/transactions/export", {
+        fetch("/api/transactions/export", {
             method: "GET",
             headers: {
                 "Authorization": `Bearer ${localStorage.getItem("accessToken")}`,
@@ -50,7 +50,7 @@ const TransactionsPage = () => {
 
 
     const loadTransactions = () => {
-        fetch("http://localhost:8080/api/transactions", {
+        fetch("/api/transactions", {
             method: "GET",
             headers: {
                 "Authorization": `Bearer ${localStorage.getItem("accessToken")}`,
@@ -77,7 +77,7 @@ const TransactionsPage = () => {
         formData.append("file", file);
 
         try {
-            const response = await fetch("http://localhost:8080/api/transactions/import", {
+            const response = await fetch("/api/transactions/import", {
                 method: "POST",
                 headers: {
                     "Authorization": `Bearer ${localStorage.getItem("accessToken")}`

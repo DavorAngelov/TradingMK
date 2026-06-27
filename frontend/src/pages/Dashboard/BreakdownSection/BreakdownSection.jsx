@@ -5,7 +5,7 @@ const BreakdownSection = () => {
     const [stocks, setStocks] = useState([]);
 
     useEffect(() => {
-        fetch("http://localhost:8080/api/stocks")
+        fetch("/api/stocks")
             .then((res) => res.json())
             .then((data) => setStocks(data))
             .catch((err) => console.error("Error fetching stocks:", err));

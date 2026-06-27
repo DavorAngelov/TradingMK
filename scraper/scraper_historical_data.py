@@ -1,68 +1,48 @@
-from bs4 import BeautifulSoup
 import requests
+from bs4 import BeautifulSoup
 from datetime import datetime, timedelta
 import json
+
+def post_history_for_all():
+    symbols = ["KMB","ALK","TEL","REPL","TNB","PPIV","UNI","STB","MPT","TTK","GRNT","MTUR"]
+
+    for s in symbols:
+        post_history_to_backend(s)
 
 def get_stock_history(symbol, days=30):
     url = f"https://www.mse.mk/en/stats/symbolhistory/{symbol}"
     response = requests.get(url)
     soup = BeautifulSoup(response.text, "html.parser")
 
-    history_data = []
-
     table = soup.select_one(".table")
     if not table:
-        print("Table not found")
         return []
 
-    rows = table.select("tbody tr")
-    cutoff_date = datetime.now() - timedelta(days=days)
+    cutoff = datetime.now() - timedelta(days=days)
+    data = []
 
-    for row in rows:
+    for row in table.select("tbody tr"):
         cols = row.find_all("td")
-        if len(cols) >= 5:
-            try:
-                date_str = cols[0].text.strip()
-                date_obj = datetime.strptime(date_str, "%m/%d/%Y")
+        if len(cols) < 5:
+            continue
 
-                if date_obj < cutoff_date:
-                    break
+        try:
+            date = datetime.strptime(cols[0].text.strip(), "%m/%d/%Y")
+            if date < cutoff:
+                break
 
-                close_price = float(cols[4].text.strip().replace(",", ""))
+            data.append({
+                "stock": {"symbol": symbol},
+                "timestamp": date.strftime("%Y-%m-%d"),
+                "price": float(cols[4].text.strip().replace(",", ""))
+            })
+        except:
+            continue
 
-                history_data.append({
-                    "stock": {
-                        "symbol": symbol
-                    },
-                    "timestamp": date_obj.strftime("%Y-%m-%d"),
-                    "price": close_price
-                })
-
-            except Exception as e:
-                print("Error parsing row:", e)
-
-    return history_data
-
-
+    return data
 
 def post_history_to_backend(symbol):
-    history_data = get_stock_history(symbol)
-    print(json.dumps(history_data, indent=2))
-    if history_data:
-        url = "http://localhost:8080/api/history/upload"
-        response = requests.post(url, json=history_data)
-        print(f"Uploaded {len(history_data)} rows for {symbol}: {response.status_code}")
-
-if __name__ == '__main__':
-    post_history_to_backend("KMB")
-    post_history_to_backend("ALK")
-    post_history_to_backend("TEL")
-    post_history_to_backend("REPL")
-    post_history_to_backend("TNB")
-    post_history_to_backend("PPIV")
-    post_history_to_backend("UNI")
-    post_history_to_backend("STB")
-    post_history_to_backend("MPT")
-    post_history_to_backend("TTK")
-    post_history_to_backend("GRNT")
-    post_history_to_backend("MTUR")
+    data = get_stock_history(symbol)
+    if data:
+        requests.post("http://backend:8080/api/history/upload", json=data)
+        print(f"Uploaded {symbol}")

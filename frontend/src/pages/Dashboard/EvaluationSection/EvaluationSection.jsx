@@ -16,7 +16,7 @@ const EvaluationSection = () => {
             // fetch stock prices for holdings
             const symbols = demoPortfolio.holdings.map(h => h.stockSymbol);
             if (symbols.length > 0) {
-                fetch("http://localhost:8080/api/stocks")
+                fetch("/api/stocks")
                     .then(res => res.json())
                     .then(allStocks => {
                         const priceMap = {};
@@ -29,7 +29,7 @@ const EvaluationSection = () => {
             }
 
         } else{
-        fetch("http://localhost:8080/api/portfolio", {
+        fetch("/api/portfolio", {
             headers: {
                 'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
             }
@@ -45,7 +45,7 @@ const EvaluationSection = () => {
                     const symbols = data.holdings.map(h => h.stockSymbol);
                     if (symbols.length === 0) return;
 
-                    fetch("http://localhost:8080/api/stocks")
+                    fetch("/api/stocks")
                         .then(res => res.json())
                         .then(allStocks => {
                             const priceMap = {};

@@ -11,7 +11,7 @@ export default function Watchlist() {
         if (!token) return;
 
         try {
-            const res = await fetch("http://localhost:8080/api/watchlist", {
+            const res = await fetch("api/watchlist", {
                 headers: { "Authorization": `Bearer ${token}` },
             });
             const data = await res.json();
@@ -27,7 +27,7 @@ export default function Watchlist() {
 
     const handleDelete = async (id) => {
         try {
-            await fetch(`http://localhost:8080/api/watchlist/${id}`, {
+            await fetch(`/api/watchlist/${id}`, {
                 method: "DELETE",
                 headers: { "Authorization": `Bearer ${token}` },
             });

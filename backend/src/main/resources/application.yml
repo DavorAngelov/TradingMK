@@ -7,7 +7,7 @@ spring:
 
 #    url: jdbc:postgresql://localhost:5432/tradingmk
     username: davorangelov
-    password: 12345
+    password: 123
 
 
   sql:
