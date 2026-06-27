@@ -8,9 +8,9 @@ on:
 
 env:
   REGISTRY: docker.io
-  BACKEND_IMAGE: ${{ secrets.davor10 }}/tradingmk-backend
-  FRONTEND_IMAGE: ${{ secrets.davor10 }}/tradingmk-frontend
-  SCRAPER_IMAGE: ${{ secrets.davor10 }}/tradingmk-scraper
+  BACKEND_IMAGE: ${{ secrets.DOCKERHUB_USERNAME }}/tradingmk-backend
+  FRONTEND_IMAGE: ${{ secrets.DOCKERHUB_USERNAME }}/tradingmk-frontend
+  SCRAPER_IMAGE: ${{ secrets.DOCKERHUB_USERNAME }}/tradingmk-scraper
 
 jobs:
   # Job 1 – Backend: compile, test, build image
