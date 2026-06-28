@@ -1,6 +1,6 @@
 import requests
 from bs4 import BeautifulSoup
-
+import os
 BASE_URL = "https://www.mse.mk"
 
 def run_scraper():
@@ -56,4 +56,5 @@ def get_stocks():
     return stocks
 
 def post_to_backend(stocks):
-    requests.post("http://backend:8080/api/stocks/update", json=stocks)
+    backend_url = os.getenv("BACKEND_URL", "http://backend-service.tradingmk.svc.cluster.local:8080")
+    requests.post(f"{backend_url}/api/stocks/update", json=stocks)

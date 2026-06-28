@@ -1,11 +1,12 @@
 import requests
+import os
 from bs4 import BeautifulSoup
 from datetime import datetime, timedelta
-import json
+
+BACKEND_URL = os.getenv("BACKEND_URL", "http://backend-service.tradingmk.svc.cluster.local:8080")
 
 def post_history_for_all():
     symbols = ["KMB","ALK","TEL","REPL","TNB","PPIV","UNI","STB","MPT","TTK","GRNT","MTUR"]
-
     for s in symbols:
         post_history_to_backend(s)
 
@@ -25,12 +26,10 @@ def get_stock_history(symbol, days=30):
         cols = row.find_all("td")
         if len(cols) < 5:
             continue
-
         try:
             date = datetime.strptime(cols[0].text.strip(), "%m/%d/%Y")
             if date < cutoff:
                 break
-
             data.append({
                 "stock": {"symbol": symbol},
                 "timestamp": date.strftime("%Y-%m-%d"),
@@ -44,5 +43,5 @@ def get_stock_history(symbol, days=30):
 def post_history_to_backend(symbol):
     data = get_stock_history(symbol)
     if data:
-        requests.post("http://backend:8080/api/history/upload", json=data)
+        requests.post(f"{BACKEND_URL}/api/history/upload", json=data)
         print(f"Uploaded {symbol}")
