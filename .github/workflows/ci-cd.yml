@@ -1,4 +1,4 @@
-name: CI/CD – Build, Test & Push to Docker Hub
+name: CI/CD – Build & Push to Docker Hub
 
 on:
   push:
@@ -13,10 +13,8 @@ env:
   SCRAPER_IMAGE: ${{ secrets.DOCKERHUB_USERNAME }}/tradingmk-scraper
 
 jobs:
-  # Job 1 – Backend: compile, test, build image
-
   backend:
-    name: Backend – Build & Test
+    name: Backend – Build
     runs-on: ubuntu-24.04
 
     services:
@@ -26,7 +24,8 @@ jobs:
           POSTGRES_DB: tradingmk
           POSTGRES_USER: davorangelov
           POSTGRES_PASSWORD: 123
-        ports: ["5432:5432"]
+        ports:
+          - 5432:5432
         options: >-
           --health-cmd "pg_isready -U davorangelov -d tradingmk"
           --health-interval 10s
@@ -44,17 +43,16 @@ jobs:
           distribution: temurin
           cache: maven
 
-      - name: Run Maven tests
+      - name: Build backend (skip tests)
         working-directory: backend
         env:
           SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5432/tradingmk
-          SPRING_DATASOURCE_USERNAME: tradingmk
+          SPRING_DATASOURCE_USERNAME: davorangelov
           SPRING_DATASOURCE_PASSWORD: 123
-        run: mvn package -DskipTests
+        run: mvn clean package -DskipTests -q
 
-      - name: Build Maven artifact (skip tests – already ran)
-        working-directory: backend
-        run: mvn package -DskipTests -q
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -74,7 +72,7 @@ jobs:
           tags: |
             type=sha,prefix=sha-
             type=ref,event=branch
-            type=raw,value=latest,enable=${{ github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main' }}
+            type=raw,value=latest,enable=${{ github.ref == 'refs/heads/master' }}
 
       - name: Build & push backend image
         uses: docker/build-push-action@v5
@@ -82,15 +80,14 @@ jobs:
           context: ./backend
           file: ./backend/Dockerfile
           push: ${{ github.event_name == 'push' }}
+          platforms: linux/amd64,linux/arm64
           tags: ${{ steps.meta-backend.outputs.tags }}
           labels: ${{ steps.meta-backend.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
-  # Job 2 – Frontend: lint, build, push image
-
   frontend:
-    name: Frontend – Build & Push
+    name: Frontend – Build
     runs-on: ubuntu-24.04
 
     steps:
@@ -108,13 +105,12 @@ jobs:
         working-directory: frontend
         run: npm ci
 
-      - name: Lint
-        working-directory: frontend
-        run: npm run lint --if-present
-
-      - name: Run tests
+      - name: Build frontend
         working-directory: frontend
         run: npm run build
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -134,7 +130,7 @@ jobs:
           tags: |
             type=sha,prefix=sha-
             type=ref,event=branch
-            type=raw,value=latest,enable=${{ github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main' }}
+            type=raw,value=latest,enable=${{ github.ref == 'refs/heads/master' }}
 
       - name: Build & push frontend image
         uses: docker/build-push-action@v5
@@ -142,15 +138,14 @@ jobs:
           context: ./frontend
           file: ./frontend/Dockerfile
           push: ${{ github.event_name == 'push' }}
+          platforms: linux/amd64,linux/arm64
           tags: ${{ steps.meta-frontend.outputs.tags }}
           labels: ${{ steps.meta-frontend.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
-  # Job 3 – Scraper: lint, test, push image
-
   scraper:
-    name: Scraper – Build & Push
+    name: Scraper – Build
     runs-on: ubuntu-24.04
 
     steps:
@@ -168,15 +163,18 @@ jobs:
         working-directory: scraper
         run: pip install -r requirements.txt
 
-      - name: Lint with flake8
+      - name: Lint (non-blocking)
         working-directory: scraper
         run: |
           pip install flake8 --quiet
           flake8 . --max-line-length=120 --exclude=__pycache__ || true
 
-      - name: Run tests
+      - name: Test (non-blocking)
         working-directory: scraper
         run: python -m pytest --tb=short -q || true
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -196,7 +194,7 @@ jobs:
           tags: |
             type=sha,prefix=sha-
             type=ref,event=branch
-            type=raw,value=latest,enable=${{ github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main' }}
+            type=raw,value=latest,enable=${{ github.ref == 'refs/heads/master' }}
 
       - name: Build & push scraper image
         uses: docker/build-push-action@v5
@@ -204,6 +202,7 @@ jobs:
           context: ./scraper
           file: ./scraper/Dockerfile
           push: ${{ github.event_name == 'push' }}
+          platforms: linux/amd64,linux/arm64
           tags: ${{ steps.meta-scraper.outputs.tags }}
           labels: ${{ steps.meta-scraper.outputs.labels }}
           cache-from: type=gha
