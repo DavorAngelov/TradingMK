@@ -1,0 +1,36 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: mongodb-init-replicaset
+  namespace: tradingmk
+  labels:
+    app.kubernetes.io/part-of: tradingmk
+spec:
+  ttlSecondsAfterFinished: 120
+  template:
+    spec:
+      restartPolicy: OnFailure
+      containers:
+        - name: mongo-init
+          image: mongo:7.0
+          command:
+            - mongosh
+            - "--host"
+            - "mongodb-0.mongodb-headless.tradingmk.svc.cluster.local:27017"
+            - "--username"
+            - "mongoAdmin"
+            - "--password"
+            - "mongoSecret123"
+            - "--authenticationDatabase"
+            - "admin"
+            - "--eval"
+            - |
+              rs.initiate({
+                _id: "tradingmk-rs",
+                members: [
+                  { _id: 0, host: "mongodb-0.mongodb-headless.tradingmk.svc.cluster.local:27017", priority: 2 },
+                  { _id: 1, host: "mongodb-1.mongodb-headless.tradingmk.svc.cluster.local:27017", priority: 1 },
+                  { _id: 2, host: "mongodb-2.mongodb-headless.tradingmk.svc.cluster.local:27017", priority: 1 }
+                ]
+              });
+              print("Replica set initiated");
