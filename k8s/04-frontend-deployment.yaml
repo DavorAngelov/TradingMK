@@ -24,7 +24,7 @@ spec:
     spec:
       containers:
         - name: frontend
-          image: davor10/tradingmk-frontend:sha-c2a4a50
+          image: davor10/tradingmk-frontend:sha-d28efbe
           imagePullPolicy: Always
           ports:
             - name: http
