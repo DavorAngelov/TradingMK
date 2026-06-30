@@ -32,7 +32,7 @@ spec:
               done
       containers:
         - name: scraper
-          image: davor10/tradingmk-scraper:latest
+          image: davor10/tradingmk-scraper:sha-c2a4a50
           imagePullPolicy: Always
           envFrom:
             - configMapRef:
