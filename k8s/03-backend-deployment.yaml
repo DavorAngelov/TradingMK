@@ -37,7 +37,7 @@ spec:
               echo "PostgreSQL is ready."
       containers:
         - name: backend
-          image: davor10/tradingmk-backend:sha-7291559
+          image: davor10/tradingmk-backend:sha-2b8029d
           imagePullPolicy: Always
           ports:
             - name: http
