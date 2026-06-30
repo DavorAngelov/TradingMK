@@ -21,13 +21,13 @@ jobs:
       postgres:
         image: postgres:16-alpine
         env:
-          POSTGRES_DB: tradingmk
-          POSTGRES_USER: davorangelov
-          POSTGRES_PASSWORD: 123
+          POSTGRES_DB: ${{ secrets.CI_DB_NAME }}
+          POSTGRES_USER: ${{ secrets.CI_DB_USER }}
+          POSTGRES_PASSWORD: ${{ secrets.CI_DB_PASSWORD }}
         ports:
           - 5432:5432
         options: >-
-          --health-cmd "pg_isready -U davorangelov -d tradingmk"
+          --health-cmd "pg_isready -U ${{ secrets.CI_DB_USER }} -d ${{ secrets.CI_DB_NAME }}
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
@@ -46,9 +46,9 @@ jobs:
       - name: Build backend (skip tests)
         working-directory: backend
         env:
-          SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5432/tradingmk
-          SPRING_DATASOURCE_USERNAME: davorangelov
-          SPRING_DATASOURCE_PASSWORD: 123
+          SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5432/${{ secrets.CI_DB_NAME }}
+          SPRING_DATASOURCE_USERNAME: ${{ secrets.CI_DB_USER }}
+          SPRING_DATASOURCE_PASSWORD: ${{ secrets.CI_DB_PASSWORD }}
         run: mvn clean package -DskipTests -q
 
       - name: Set up QEMU
