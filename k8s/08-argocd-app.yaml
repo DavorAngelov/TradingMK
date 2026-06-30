@@ -1,0 +1,26 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: tradingmk
+  namespace: argocd
+  labels:
+    app.kubernetes.io/part-of: tradingmk
+spec:
+  project: default
+
+  source:
+    repoURL: https://github.com/DavorAngelov/TradingMK
+    targetRevision: master
+    path: k8s
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: tradingmk
+
+  syncPolicy:
+    automated:
+      prune: true # delete resources removed from git
+      selfHeal: true # revert manual changes to match git
+    syncOptions:
+      - CreateNamespace=true
+      - ApplyOutOfSyncOnly=true
