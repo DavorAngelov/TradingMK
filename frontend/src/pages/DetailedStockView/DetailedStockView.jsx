@@ -47,7 +47,7 @@ const DetailedStockView = () => {
         if (!symbol || !selectedTimeframe) return;
 
         let from, to;
-        const now = new Date("2026-06-27");
+        const now = new Date("2026-06-27" );
 
         if (selectedTimeframe === '1w') {
             from = new Date(now);
