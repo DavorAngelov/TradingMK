@@ -1,4 +1,4 @@
-from datetime import time
+import time
 
 from scraper import run_scraper
 from scraper_historical_data import post_history_for_all

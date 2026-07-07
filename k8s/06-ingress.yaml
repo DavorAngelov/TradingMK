@@ -6,19 +6,15 @@ metadata:
   labels:
     app.kubernetes.io/part-of: tradingmk
   annotations:
-    # nginx.ingress.kubernetes.io/rewrite-target: /
     nginx.ingress.kubernetes.io/proxy-body-size: "10m"
     nginx.ingress.kubernetes.io/proxy-read-timeout: "60"
     nginx.ingress.kubernetes.io/proxy-connect-timeout: "60"
-
     nginx.ingress.kubernetes.io/use-regex: "true"
-
-    # cert-manager.io/cluster-issuer: "letsencrypt-prod"
 spec:
   ingressClassName: nginx
-
   rules:
-    - http:
+    - host: tradingmk.local
+      http:
         paths:
           - path: /api(/|$)(.*)
             pathType: ImplementationSpecific
@@ -27,7 +23,6 @@ spec:
                 name: backend-service
                 port:
                   number: 8080
-
           - path: /
             pathType: Prefix
             backend:
