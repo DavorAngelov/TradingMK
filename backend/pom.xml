@@ -164,6 +164,13 @@
             <artifactId>junit-jupiter-params</artifactId>
         </dependency>
 
+        <!-- Spring MVC Test Framework support (MockMvc + security test helpers) -->
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+
 
 
 
