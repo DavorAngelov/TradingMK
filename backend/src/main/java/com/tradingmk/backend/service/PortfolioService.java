@@ -142,4 +142,25 @@ public class PortfolioService {
         transaction.setTimestamp(LocalDateTime.now());
         transactionRepository.save(transaction);
     }
+
+    /**
+     * Validates a BUY order before it is executed.
+     * Used for Input Space Partitioning
+     */
+    public boolean isValidBuyOrder(int quantity, double pricePerUnit, BigDecimal balance) {
+        if (quantity <= 0) return false;
+        if (pricePerUnit <= 0) return false;
+        BigDecimal totalCost = BigDecimal.valueOf(pricePerUnit).multiply(BigDecimal.valueOf(quantity));
+        return balance.compareTo(totalCost) >= 0;
+    }
+
+    /**
+     * Decides whether a trade can proceed given stock availability,
+     * with an admin-override escape hatch for stocks not yet synced
+     * from the scraper. Used for Logic Coverage
+     */
+    public boolean isTradeExecutable(int quantity, boolean stockExists, boolean adminOverride) {
+        boolean validQuantity = quantity > 0;
+        return validQuantity && (stockExists || adminOverride);
+    }
 }

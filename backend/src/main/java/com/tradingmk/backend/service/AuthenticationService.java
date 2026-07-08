@@ -67,7 +67,6 @@ public class AuthenticationService {
 
 
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
-        System.out.println("Authenticating: " + request.getUsername());
 
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(

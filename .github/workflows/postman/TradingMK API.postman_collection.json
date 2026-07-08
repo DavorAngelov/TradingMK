@@ -1,0 +1,294 @@
+{
+  "info": {
+    "_postman_id": "0059c650-a08f-494b-875a-037f59545584",
+    "name": "TradingMK API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "45939775",
+    "_collection_link": "https://go.postman.co/collection/45939775-0059c650-a08f-494b-875a-037f59545584?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "01 - Register user",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status 200', () => pm.response.to.have.status(200));",
+              "pm.test('Token returned', () => { const body = pm.response.json(); pm.expect(body.token).to.be.a('string'); pm.collectionVariables.set('token', body.token); });"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"username\": \"postman_user_{{$randomInt}}\",\n  \"email\": \"postman{{$randomInt}}@test.com\",\n  \"password\": \"Password123!\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/auth/register",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "auth",
+            "register"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "02 - Login (authenticate)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status 200', () => pm.response.to.have.status(200));",
+              "pm.collectionVariables.set('token', pm.response.json().token);"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"username\": \"davor\",\n  \"password\": \"davor\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/auth/authenticate",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "auth",
+            "authenticate"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "03 - Get all stocks (Read)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status 200', () => pm.response.to.have.status(200));",
+              "pm.test('Response is array', () => pm.expect(pm.response.json()).to.be.an('array'));"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/api/stocks",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "stocks"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "05 - Get watchlist (Read)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status 200', () => pm.response.to.have.status(200));"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/api/watchlist",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "watchlist"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "07 - Submit trade request (Create)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status 200', () => pm.response.to.have.status(200));",
+              "pm.test('Status is PENDING', () => pm.expect(pm.response.json().status).to.eql('PENDING'));",
+              "pm.collectionVariables.set('trade_id', pm.response.json().id);"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"stockSymbol\": \"KMB\",\n  \"quantity\": 5,\n  \"pricePerUnit\": 100.0,\n  \"type\": \"BUY\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/trades/request",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "trades",
+            "request"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "08 - Sell stock (Update / business action)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status 200 or 500 if no holding', () => pm.expect([200,500]).to.include(pm.response.code));"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"stockSymbol\": \"KMB\",\n  \"quantity\": 1,\n  \"pricePerUnit\": 100.0\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/trades/request",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "trades",
+            "request"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "09 - Unauthorized watchlist access (negative test)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Rejects missing token', () => pm.expect(pm.response.code).to.be.oneOf([401,403]));"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/api/watchlist",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "watchlist"
+          ]
+        }
+      },
+      "response": []
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:8080"
+    },
+    {
+      "key": "token",
+      "value": ""
+    },
+    {
+      "key": "watchlist_id",
+      "value": ""
+    },
+    {
+      "key": "trade_id",
+      "value": ""
+    }
+  ]
+}

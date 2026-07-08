@@ -48,4 +48,23 @@ public class StockHistoryService {
                 .findByStockAndTimestampBetween(stock, from, to);
     }
 
+    /**
+     * Analyzes a list of historical prices (oldest -> newest) and returns
+     * the overall trend based on the last observed price movement.
+     * Used for Graph Coverage
+     */
+    public String analyzeTrend(List<Double> prices) {
+        double temps = 0;
+        String trend = "STABLE";
+        for (int i = 1; i < prices.size(); i++) {
+            temps = prices.get(i) - prices.get(i - 1);
+            if (temps > 0) {
+                trend = "UP";
+            } else if (temps < 0) {
+                trend = "DOWN";
+            }
+        }
+        return trend;
+    }
+
 }
